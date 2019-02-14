@@ -1,65 +1,147 @@
-import chalk from 'chalk'
-import path from 'path'
-import fs from 'fs-extra'
-import glob from 'glob'
-import unified from 'unified'
-import matter from 'gray-matter'
-import slugger from 'slug'
+import path from "path";
 
-const parse = require('remark-parse')
-const stringify = require('remark-stringify')
-const frontmatter = require('remark-frontmatter')
+import glob from "glob";
+
+import slugger from "slug";
+
+import chalk from "chalk";
+
+import unified from "unified";
+
+import fs from "fs-extra";
+
+import matter from "gray-matter";
+
+import { Generator, HandlebarsEngine } from "./generator";
+
+const parse = require("remark-parse");
+const stringify = require("remark-stringify");
+const frontmatter = require("remark-frontmatter");
 
 interface RaptorConfig {
-	sourcePath: string;
-	publicPath: string;
-	basePath: string;
+  sourcePath: string;
+  publicPath: string;
+  basePath: string;
+}
+
+interface Page {
+  slug: string;
+  data: { [key: string]: any };
+  excerpt?: string;
+  content: string;
+  source: {
+    root: string;
+    dir: string;
+    base: string;
+    ext: string;
+    name: string;
+  };
+  destinationPath?: string;
+}
+
+/**
+ * Write a file with content to dists
+ * @param path Destination Path
+ * @param content File content
+ */
+async function write(path: string, content: string) {
+  await fs.ensureFile(path);
+  await fs.writeFile(path, content, { encoding: "utf8" });
 }
 
 const defaultConfig: RaptorConfig = {
-	sourcePath: 'src',
-	publicPath: 'public',
-	basePath: '/'
-}
+  sourcePath: "src",
+  publicPath: "public",
+  basePath: "/"
+};
 
 export const compiler = async (options: RaptorConfig = defaultConfig) => {
-	console.log(options)
+  const basePath = options.basePath;
+  const sourcePath = path.resolve(basePath, options.sourcePath);
+  const publicPath = path.resolve(basePath, options.publicPath);
 
-	const basePath = options.basePath
-	const sourcePath = path.resolve(basePath, options.sourcePath)
-	const publicPath = path.resolve(basePath, options.publicPath)
-	
-	const pagesPath = `${sourcePath}/pages`
-	// @todo build assets
+  const pagesPath = `${sourcePath}/pages`;
 
-	// @todo read pages
-	const files: string[] = glob.sync('**/*.@(md|markdown)', { cwd: pagesPath });
-	
-	const pagesPromise: Promise<any>[] = files.map(async (f) => {
-		const PromiseBuffer = fs.readFile(`${pagesPath}/${f}`)
-		const buffer = await PromiseBuffer;
-		try {
-			const result = await unified()
-				.use(parse)
-				.use(stringify)
-				.use(frontmatter, ['yaml', 'toml'])
-				.process(buffer.toString())
-			const { data, excerpt, content } = matter(String(result), { excerpt: true })
-			const slug = slugger(f.replace(/\.[^/.]+$/, ''))
-			// @todo add final output path
-			return { slug, data, excerpt, content }
-		} catch(e) {
-			console.log(chalk.red(e.message))
-			process.exit(0)
-		}
-	})
+  const engine = new HandlebarsEngine({
+	  partialsDir: `${sourcePath}/partials`,
+	  layoutsDir: `${sourcePath}/layouts`
+  })
 
-	pagesPromise.map(async (page) => {
-		console.log((await page).slug)
-	})
+  const generator = new Generator(engine)
 
-	// @todo render pages
+  console.log(await generator.render({
+    body: '<h1>test</h1>',
+    title: 'My first compilation'
+  }))
 
-	// @todo write files
-	console.log(chalk.green('...compiling site'))
-}
+  // clean output directory
+  await fs.emptyDir(publicPath);
+  // @todo build assets
+
+  // @todo read pages
+  const files: string[] = glob.sync("**/*.@(md|markdown)", { cwd: pagesPath });
+
+  const pagesPromise: Promise<Page | undefined>[] = files
+    .map(async f => {
+      const PromiseBuffer = fs.readFile(`${pagesPath}/${f}`);
+      const buffer = await PromiseBuffer;
+      try {
+        const result = await unified()
+          .use(parse)
+          .use(stringify)
+          .use(frontmatter, ["yaml", "toml"])
+          .process(buffer.toString());
+        const { data, excerpt, content } = matter(String(result), {
+          excerpt: true
+        });
+        const { root, dir, base, ext, name } = path.parse(f);
+        const slug = slugger(name);
+        return {
+          slug,
+          data,
+          excerpt,
+          content,
+          source: { root, dir, base, ext, name }
+        };
+      } catch (e) {
+        console.log(chalk.red(e.message));
+      }
+    })
+    .map(async page => {
+      // generate destination path
+      try {
+        const p = await page;
+        let destinationPath = "";
+        if (p) {
+          if (p.source.name !== "index") {
+            //@todo create folder at dir path with slug name of page and insert content as index.html inside folder
+            destinationPath = `${publicPath}${p.source.dir &&
+              "/" + p.source.dir}/${p.slug}/index.html`;
+          } else {
+            //@todo create folder at dir path and place index.html file inside folder
+            destinationPath = `${publicPath}/${p.source.dir}/${
+              p.source.name
+            }.html`;
+          }
+          return { ...p, destinationPath };
+        } else {
+          throw new Error();
+        }
+      } catch (e) {
+        throw new Error();
+      }
+    });
+
+  const constructPage = await Promise.all(pagesPromise);
+  constructPage.map((page, index, arr) => {
+    if (page) {
+      process.nextTick(() => {
+		  write(page.destinationPath || "", page.content);
+	  })
+    }
+  });
+  // @todo render pages
+
+  // @todo write files
+  console.log(chalk.green("...compiling site"));
+};

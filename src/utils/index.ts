@@ -8,7 +8,7 @@ export const parseConfigFile = async (path: string) => {
 		const configBasePath = p.dirname(path)
 		config = {
 			...config,
-			// add basep ath to properly resolve config paths
+			// add base ath to properly resolve config paths
 			basePath: configBasePath
 		}
 		return config

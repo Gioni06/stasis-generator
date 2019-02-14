@@ -1,5 +1,6 @@
 ---
 title: Test title
+layout: base
 ---
 
 # Hello world
