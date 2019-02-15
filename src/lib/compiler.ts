@@ -14,9 +14,12 @@ import matter from "gray-matter";
 
 import { Generator, HandlebarsEngine } from "./generator";
 
-const parse = require("remark-parse");
-const stringify = require("remark-stringify");
 const frontmatter = require("remark-frontmatter");
+var markdown = require('remark-parse')
+var remark2rehype = require('remark-rehype')
+var doc = require('rehype-document')
+var format = require('rehype-format')
+var html = require('rehype-stringify')
 
 interface RaptorConfig {
   sourcePath: string;
@@ -63,16 +66,11 @@ export const compiler = async (options: RaptorConfig = defaultConfig) => {
   const pagesPath = `${sourcePath}/pages`;
 
   const engine = new HandlebarsEngine({
-	  partialsDir: `${sourcePath}/partials`,
-	  layoutsDir: `${sourcePath}/layouts`
-  })
+    partialsDir: `${sourcePath}/partials`,
+    layoutsDir: `${sourcePath}/layouts`
+  });
 
-  const generator = new Generator(engine)
-
-  console.log(await generator.render({
-    body: '<h1>test</h1>',
-    title: 'My first compilation'
-  }))
+  const generator = new Generator(engine);
 
   // clean output directory
   await fs.emptyDir(publicPath);
@@ -87,11 +85,16 @@ export const compiler = async (options: RaptorConfig = defaultConfig) => {
       const buffer = await PromiseBuffer;
       try {
         const result = await unified()
-          .use(parse)
-          .use(stringify)
+          .use(markdown)
           .use(frontmatter, ["yaml", "toml"])
+          .use(remark2rehype)
+          .use(format)
+          .use(html)
           .process(buffer.toString());
-        const { data, excerpt, content } = matter(String(result), {
+        const { content } = matter(String(result), {
+          excerpt: true
+        });
+        const { data, excerpt } = matter(String(buffer.toString()), {
           excerpt: true
         });
         const { root, dir, base, ext, name } = path.parse(f);
@@ -135,9 +138,13 @@ export const compiler = async (options: RaptorConfig = defaultConfig) => {
   const constructPage = await Promise.all(pagesPromise);
   constructPage.map((page, index, arr) => {
     if (page) {
-      process.nextTick(() => {
-		  write(page.destinationPath || "", page.content);
-	  })
+      const { content, ...rest } = page
+      generator.render({
+        body: page.content,
+        ...rest
+      }).then((renderResult) => {
+        write(page.destinationPath || "", renderResult);
+      })
     }
   });
   // @todo render pages

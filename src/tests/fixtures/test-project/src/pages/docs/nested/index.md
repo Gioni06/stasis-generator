@@ -2,5 +2,6 @@
 title: Sub Docs Page
 layout: docs
 ---
-# Hello Sub Docs
+
+Link to [sub page](/docs/nested/subdoc)
 
