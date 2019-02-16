@@ -17,7 +17,6 @@ interface TemplateEngine {
 
 export class HandlebarsEngine implements TemplateEngine{
 	constructor(private options: HandlebarsOptions) {
-		console.log(options)
 		const partials = glob.sync("**/*.@(hbs|handlebars)", { cwd: options.partialsDir })
 		partials.map((p) => {
 			const { name } = path.parse(p)

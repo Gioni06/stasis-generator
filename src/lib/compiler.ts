@@ -13,6 +13,7 @@ import fs from "fs-extra";
 import matter from "gray-matter";
 
 import { Generator, HandlebarsEngine } from "./generator";
+import { bundle } from "./bundler";
 
 const frontmatter = require("remark-frontmatter");
 var markdown = require('remark-parse')
@@ -59,10 +60,10 @@ const defaultConfig: RaptorConfig = {
 };
 
 export const compiler = async (options: RaptorConfig = defaultConfig) => {
+  const startTime = process.hrtime();
   const basePath = options.basePath;
   const sourcePath = path.resolve(basePath, options.sourcePath);
   const publicPath = path.resolve(basePath, options.publicPath);
-
   const pagesPath = `${sourcePath}/pages`;
 
   const engine = new HandlebarsEngine({
@@ -74,9 +75,7 @@ export const compiler = async (options: RaptorConfig = defaultConfig) => {
 
   // clean output directory
   await fs.emptyDir(publicPath);
-  // @todo build assets
 
-  // @todo read pages
   const files: string[] = glob.sync("**/*.@(md|markdown)", { cwd: pagesPath });
 
   const pagesPromise: Promise<Page | undefined>[] = files
@@ -136,6 +135,7 @@ export const compiler = async (options: RaptorConfig = defaultConfig) => {
     });
 
   const constructPage = await Promise.all(pagesPromise);
+  const finalPages: Promise<any>[] = []
   constructPage.map((page, index, arr) => {
     if (page) {
       const { content, ...rest } = page
@@ -143,12 +143,18 @@ export const compiler = async (options: RaptorConfig = defaultConfig) => {
         body: page.content,
         ...rest
       }).then((renderResult) => {
-        write(page.destinationPath || "", renderResult);
+        finalPages.push(write(page.destinationPath || "", renderResult))
       })
     }
   });
-  // @todo render pages
+  
+  console.log(chalk.green("Building site..."));
 
-  // @todo write files
-  console.log(chalk.green("...compiling site"));
+  await Promise.all(finalPages)
+  await bundle(options)
+  // display build time
+  const timeDiff = process.hrtime(startTime);
+  const duration = timeDiff[0] * 1000 + timeDiff[1] / 1e6;
+  console.log(chalk.green(`Site built successfully in ${duration}ms`));
+  return
 };
