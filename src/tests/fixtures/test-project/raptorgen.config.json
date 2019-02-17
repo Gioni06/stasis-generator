@@ -1,0 +1,9 @@
+{
+	"sourcePath": "src",
+	"publicPath": "dist",
+	"assetsPath": "assets",
+	"staticPath": "static",
+	"entryAssets": [
+		"**/*"
+	]
+}

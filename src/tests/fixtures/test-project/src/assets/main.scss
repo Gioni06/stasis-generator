@@ -1,0 +1,11 @@
+
+@import 'css/variables';
+body {
+	background-color: $bg-color;
+	padding: 0 1em;
+}
+
+main {
+	max-width: 960px;
+	margin: 0 auto;
+}
