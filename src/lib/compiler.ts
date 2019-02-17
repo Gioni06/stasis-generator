@@ -44,7 +44,7 @@ interface Page {
 }
 
 /**
- * Write a file with content to dists
+ * Write a file with content to dist
  * @param path Destination Path
  * @param content File content
  */
