@@ -11,7 +11,7 @@
   ],
   "scripts": {
     "start": "tsc && node ./dist/bin/cli build -s src/tests/fixtures/test-project/raptorgen.config.json src/tests/fixtures/test-project",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "NODE_ENV=test ts-node ./src/tests/cases/index.ts",
     "build": "NODE_ENV=production tsc",
     "run": "node ./dist/bin/cli build -s src/tests/fixtures/test-project/raptorgen.config.json src/tests/fixtures/test-project",
     "serve": "tsc && node ./dist/bin/cli serve -s src/tests/fixtures/test-project/raptorgen.config.json src/tests/fixtures/test-project"
@@ -33,6 +33,7 @@
     "@types/globby": "^8.0.0",
     "@types/lodash": "^4.14.121",
     "@types/node": "^11.9.0",
+    "@types/pify": "^3.0.2",
     "@types/slug": "^0.9.0",
     "chalk": "^2.4.2",
     "chokidar": "^2.1.1",
@@ -45,6 +46,7 @@
     "micro": "^9.3.3",
     "micro-dev": "^3.0.0",
     "parcel-bundler": "^1.11.0",
+    "pify": "^4.0.1",
     "rehype-document": "^3.0.0",
     "rehype-format": "^2.3.1",
     "rehype-stringify": "^5.0.0",
@@ -56,6 +58,7 @@
     "serve-handler": "^5.0.8",
     "slug": "^0.9.3",
     "toml": "^3.0.0",
+    "ts-node": "^8.0.2",
     "ts-node-dev": "^1.0.0-pre.32",
     "typescript": "^3.3.3",
     "unified": "^7.1.0",

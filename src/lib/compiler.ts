@@ -60,6 +60,7 @@ const defaultConfig: RaptorConfig = {
 };
 
 export const compiler = async (options: RaptorConfig = defaultConfig) => {
+  const isTestRunner = process.env.NODE_ENV === 'test'
   const startTime = process.hrtime();
   const basePath = options.basePath;
   const sourcePath = path.resolve(basePath, options.sourcePath);
@@ -116,11 +117,11 @@ export const compiler = async (options: RaptorConfig = defaultConfig) => {
         let destinationPath = "";
         if (p) {
           if (p.source.name !== "index") {
-            //@todo create folder at dir path with slug name of page and insert content as index.html inside folder
+            //create folder at dir path with slug name of page and insert content as index.html inside folder
             destinationPath = `${publicPath}${p.source.dir &&
               "/" + p.source.dir}/${p.slug}/index.html`;
           } else {
-            //@todo create folder at dir path and place index.html file inside folder
+            //create folder at dir path and place index.html file inside folder
             destinationPath = `${publicPath}/${p.source.dir}/${
               p.source.name
             }.html`;
@@ -148,13 +149,13 @@ export const compiler = async (options: RaptorConfig = defaultConfig) => {
     }
   });
   
-  console.log(chalk.green("Building site..."));
+  !isTestRunner && console.log(chalk.green("Building site..."));
 
   await Promise.all(finalPages)
   await bundle(options)
   // display build time
   const timeDiff = process.hrtime(startTime);
   const duration = timeDiff[0] * 1000 + timeDiff[1] / 1e6;
-  console.log(chalk.green(`Site built successfully in ${duration}ms`));
+  !isTestRunner && console.log(chalk.green(`Site built successfully in ${duration}ms`));
   return
 };

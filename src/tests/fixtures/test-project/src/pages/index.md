@@ -4,5 +4,3 @@ This is a served page!
     - [Nested page](/docs/nested)
 - [Page One](/page-one)		
 - [Page Two](/page-two)
-
-This is a test
