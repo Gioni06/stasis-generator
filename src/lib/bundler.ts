@@ -21,7 +21,7 @@ export const bundle = async (raptorConfig: { [key: string]: any}) => {
 		outDir: raptorConfig.basePath + '/' + raptorConfig.publicPath + '/' + raptorConfig.assetsPath,
 		cache: false,
 		target: 'browser',
-		sourceMaps: true,
+		sourceMaps: false,
 		logLevel: 1,
 		detailedReport: false,
 		watch: false

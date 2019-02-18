@@ -14,7 +14,7 @@ export const startServer = async (raptorConfig: any, flags: any) => {
 	
 	const server = micro(async (request: any, response: any) => {
 		return handler(request, response, {
-  			public: options.public,
+  		public: options.public,
 			trailingSlash: false,
 			cleanUrls: true
 	});
