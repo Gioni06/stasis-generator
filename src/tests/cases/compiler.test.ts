@@ -1,13 +1,15 @@
+import { parseConfigFile } from "../../utils"
+import { compiler } from "../../lib/compiler"
+
+import { TCase } from "."
 import assert from 'assert'
 import fs from 'fs-extra'
 import path from 'path'
-import { TCase } from ".";
-import { compiler } from "../../lib/compiler";
-import { parseConfigFile } from "../../utils";
 
-function fileExists(path: string) {
+
+function fileExists(pathString: string) {
 	return new Promise((resolve, reject) => {
-				fs.exists(path, (exists) => {
+				fs.exists(pathString, (exists) => {
 					if(exists) {
 						resolve(exists)
 						return
@@ -19,9 +21,9 @@ function fileExists(path: string) {
 			})
 }
 
-function fileNotExists(path: string) {
+function fileNotExists(pathString: string) {
 	return new Promise((resolve, reject) => {
-				fs.exists(path, (exists) => {
+				fs.exists(pathString, (exists) => {
 					if(exists) {
 						reject(new Error('File exists although it should not'))
 						return
@@ -52,8 +54,8 @@ export function testClearDistDirectory(): TCase {
 	}
 
 	return {
-		run,
-		description: 'It clears the output directory before adding pages'
+		description: 'It clears the output directory before adding pages',
+		run
 	}
 }
 
@@ -72,8 +74,8 @@ export function testRendersPageWithDefaultLayout(): TCase {
 	}
 
 	return {
-		run,
-		description: 'It renders a page with the default layout'
+		description: 'It renders a page with the default layout',
+		run
 	}
 }
 
@@ -93,8 +95,8 @@ export function testRendersPageWithCustomLayout(): TCase {
 	}
 
 	return {
-		run,
-		description: 'It renders a page with a custom layout'
+		description: 'It renders a page with a custom layout',
+		run
 	}
 }
 
@@ -114,8 +116,8 @@ export function testGeneratesPrettyUrls(): TCase {
 	}
 
 	return {
-		run,
-		description: 'It generates an index.html file inside a folder with the slug name of the original file'
+		description: 'It generates an index.html file inside a folder with the slug name of the original file',
+		run
 	}
 }
 
@@ -140,7 +142,7 @@ export function testBundlerPicksUpFiles(): TCase {
 	}
 
 	return {
-		run,
-		description: 'It picks up files from the assets folder'
+		description: 'It picks up files from the assets folder',
+		run
 	}
 }

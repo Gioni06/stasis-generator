@@ -2,6 +2,7 @@ import chokidar from 'chokidar'
 import debounce from 'lodash/debounce'
 import { bundle } from './bundler';
 import { compiler } from './compiler';
+
 const micro = require('micro')
 const handler = require('serve-handler')
 
@@ -14,9 +15,9 @@ export const startServer = async (raptorConfig: any, flags: any) => {
 	
 	const server = micro(async (request: any, response: any) => {
 		return handler(request, response, {
-  		public: options.public,
+			cleanUrls: true,
 			trailingSlash: false,
-			cleanUrls: true
+  		public: options.public
 	});
 	})
 

@@ -1,7 +1,8 @@
 import program, { CommanderStatic } from 'commander'
+import { parseConfigFile } from './utils';
+
 import { compiler } from './lib/compiler';
 import { startServer } from './lib/serve';
-import { parseConfigFile } from './utils';
  
 export const cli = (process: NodeJS.Process): CommanderStatic => {
   program
@@ -12,7 +13,7 @@ export const cli = (process: NodeJS.Process): CommanderStatic => {
     .command('build <path>')
     .option("-s, --source_config <path>", "The source of the project")
     .description('Run the compiler')
-    .action(async function(cmd, options){
+    .action(async (cmd, options) => {
        const raptorConfig = await parseConfigFile(options.source_config )
        await compiler(raptorConfig)
     });
@@ -21,7 +22,7 @@ export const cli = (process: NodeJS.Process): CommanderStatic => {
     .command('serve <path>')
     .option("-s, --source_config <path>", "The source of the project")
     .description('Start server')
-    .action(async function(cmd, options){
+    .action(async (cmd, options) => {
        const raptorConfig = await parseConfigFile(options.source_config )
        await compiler(raptorConfig)
        startServer(raptorConfig, {})

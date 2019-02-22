@@ -30,21 +30,10 @@ export async function test(tCase: TCase): Promise<boolean|undefined> {
 	}
 }
 
-
-export async function executeTests (cases: TCase[]) {
-	const all = cases.map(t => test(t))
-	try {
-		await Promise.all(all)
-	} catch(e) {
-		console.error(chalk.red(e.message))
-		console.error(e.stack)
-	}
-}
-
-export async function executeSyncTests (cases: TCase[]) {
-	for(let i = 0; i < cases.length; i++) {
+export async function executeSyncTests (testCases: TCase[]) {
+	for(const i of testCases) {
 		try {
-			await test(cases[i])
+			await test(i)
 		} catch(e) {
 			console.error(chalk.red(e.message))
 			console.error(e.stack)

@@ -1,19 +1,20 @@
 import assert from 'assert'
 import path from 'path'
-import { TCase } from ".";
 import { parseConfigFile } from "../../utils";
+
+import { TCase } from ".";
 
 export function testLoadRaptorConfig(): TCase {
 	async function run() {
 		const config = await parseConfigFile(path.resolve(__dirname, '../fixtures/test-project/raptorgen.config.json'))
 		try {
 			assert.deepEqual(config, {
-				sourcePath: 'src',
-				publicPath: 'dist',
 				assetsPath: 'assets',
-				staticPath: 'static',
+				basePath: path.resolve(__dirname, '../fixtures/test-project'),
 				entryAssets: [ '**/*' ],
-				basePath: path.resolve(__dirname, '../fixtures/test-project')
+				publicPath: 'dist',
+				sourcePath: 'src',
+				staticPath: 'static'
 			})
 			return true
 		} catch(e) {
@@ -22,7 +23,7 @@ export function testLoadRaptorConfig(): TCase {
 	}
 
 	return {
-		run,
-		description: 'It can load a config file'
+		description: 'It can load a config file',
+		run
 	}
 }
