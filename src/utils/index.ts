@@ -1,5 +1,5 @@
-import fs from 'fs-extra'
 import chalk from 'chalk'
+import fs from 'fs-extra'
 import p from 'path'
 
 export const parseConfigFile = async (path: string) => {

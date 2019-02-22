@@ -1,7 +1,7 @@
 import program, { CommanderStatic } from 'commander'
-import { parseConfigFile } from './utils';
 import { compiler } from './lib/compiler';
 import { startServer } from './lib/serve';
+import { parseConfigFile } from './utils';
  
 export const cli = (process: NodeJS.Process): CommanderStatic => {
   program

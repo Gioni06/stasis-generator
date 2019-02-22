@@ -1,7 +1,7 @@
 import chokidar from 'chokidar'
 import debounce from 'lodash/debounce'
-import { compiler } from './compiler';
 import { bundle } from './bundler';
+import { compiler } from './compiler';
 const micro = require('micro')
 const handler = require('serve-handler')
 

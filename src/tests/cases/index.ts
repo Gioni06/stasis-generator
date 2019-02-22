@@ -1,12 +1,12 @@
 import chalk from 'chalk'
 
+import { testBundlerPicksUpFiles, testClearDistDirectory, testGeneratesPrettyUrls, testRendersPageWithCustomLayout, testRendersPageWithDefaultLayout } from './compiler.test';
 import { testLoadRaptorConfig } from './utils.test';
-import { testClearDistDirectory, testRendersPageWithDefaultLayout, testRendersPageWithCustomLayout, testGeneratesPrettyUrls, testBundlerPicksUpFiles } from './compiler.test';
 
 
 export interface TCase {
-	run(): Promise<boolean>;
 	description: string;
+	run(): Promise<boolean>;
 }
 /**
  * 

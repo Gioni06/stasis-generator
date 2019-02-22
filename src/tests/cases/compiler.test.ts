@@ -1,9 +1,9 @@
-import { TCase } from ".";
-import path from 'path'
 import assert from 'assert'
 import fs from 'fs-extra'
-import { parseConfigFile } from "../../utils";
+import path from 'path'
+import { TCase } from ".";
 import { compiler } from "../../lib/compiler";
+import { parseConfigFile } from "../../utils";
 
 function fileExists(path: string) {
 	return new Promise((resolve, reject) => {
@@ -52,7 +52,7 @@ export function testClearDistDirectory(): TCase {
 	}
 
 	return {
-		run: run,
+		run,
 		description: 'It clears the output directory before adding pages'
 	}
 }
@@ -72,7 +72,7 @@ export function testRendersPageWithDefaultLayout(): TCase {
 	}
 
 	return {
-		run: run,
+		run,
 		description: 'It renders a page with the default layout'
 	}
 }
@@ -93,7 +93,7 @@ export function testRendersPageWithCustomLayout(): TCase {
 	}
 
 	return {
-		run: run,
+		run,
 		description: 'It renders a page with a custom layout'
 	}
 }
@@ -114,7 +114,7 @@ export function testGeneratesPrettyUrls(): TCase {
 	}
 
 	return {
-		run: run,
+		run,
 		description: 'It generates an index.html file inside a folder with the slug name of the original file'
 	}
 }
@@ -140,7 +140,7 @@ export function testBundlerPicksUpFiles(): TCase {
 	}
 
 	return {
-		run: run,
+		run,
 		description: 'It picks up files from the assets folder'
 	}
 }

@@ -1,6 +1,6 @@
-import handlebars from 'handlebars'
-import glob from 'glob'
 import fs from 'fs-extra'
+import glob from 'glob'
+import handlebars from 'handlebars'
 import path from 'path';
 
 interface HandlebarsOptions {

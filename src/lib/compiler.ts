@@ -12,15 +12,15 @@ import fs from "fs-extra";
 
 import matter from "gray-matter";
 
-import { Generator, HandlebarsEngine } from "./generator";
 import { bundle } from "./bundler";
+import { Generator, HandlebarsEngine } from "./generator";
 
 const frontmatter = require("remark-frontmatter");
-var markdown = require('remark-parse')
-var remark2rehype = require('remark-rehype')
-var doc = require('rehype-document')
-var format = require('rehype-format')
-var html = require('rehype-stringify')
+let markdown = require('remark-parse')
+let remark2rehype = require('remark-rehype')
+let doc = require('rehype-document')
+let format = require('rehype-format')
+let html = require('rehype-stringify')
 
 interface RaptorConfig {
   sourcePath: string;
@@ -79,7 +79,7 @@ export const compiler = async (options: RaptorConfig = defaultConfig) => {
 
   const files: string[] = glob.sync("**/*.@(md|markdown)", { cwd: pagesPath });
 
-  const pagesPromise: Promise<Page | undefined>[] = files
+  const pagesPromise: Array<Promise<Page | undefined>> = files
     .map(async f => {
       const PromiseBuffer = fs.readFile(`${pagesPath}/${f}`);
       const buffer = await PromiseBuffer;
@@ -117,11 +117,11 @@ export const compiler = async (options: RaptorConfig = defaultConfig) => {
         let destinationPath = "";
         if (p) {
           if (p.source.name !== "index") {
-            //create folder at dir path with slug name of page and insert content as index.html inside folder
+            // create folder at dir path with slug name of page and insert content as index.html inside folder
             destinationPath = `${publicPath}${p.source.dir &&
               "/" + p.source.dir}/${p.slug}/index.html`;
           } else {
-            //create folder at dir path and place index.html file inside folder
+            // create folder at dir path and place index.html file inside folder
             destinationPath = `${publicPath}/${p.source.dir}/${
               p.source.name
             }.html`;
@@ -136,7 +136,7 @@ export const compiler = async (options: RaptorConfig = defaultConfig) => {
     });
 
   const constructPage = await Promise.all(pagesPromise);
-  const finalPages: Promise<any>[] = []
+  const finalPages: Array<Promise<any>> = []
   constructPage.map((page, index, arr) => {
     if (page) {
       const { content, ...rest } = page

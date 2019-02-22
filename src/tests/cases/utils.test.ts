@@ -1,6 +1,6 @@
-import { TCase } from ".";
-import path from 'path'
 import assert from 'assert'
+import path from 'path'
+import { TCase } from ".";
 import { parseConfigFile } from "../../utils";
 
 export function testLoadRaptorConfig(): TCase {
@@ -22,7 +22,7 @@ export function testLoadRaptorConfig(): TCase {
 	}
 
 	return {
-		run: run,
+		run,
 		description: 'It can load a config file'
 	}
 }
