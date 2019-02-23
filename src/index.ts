@@ -2,6 +2,7 @@ import program, { CommanderStatic } from "commander";
 import { parseConfigFile } from "./utils";
 
 import { compiler } from "./lib/compiler";
+import { bundle } from "./lib/bundler";
 import { startServer } from "./lib/serve";
 
 export const cli = (process: NodeJS.Process): CommanderStatic => {
@@ -15,7 +16,12 @@ export const cli = (process: NodeJS.Process): CommanderStatic => {
     .description("Run the compiler")
     .action(async (cmd, options) => {
       const raptorConfig = await parseConfigFile(options.source_config);
-      await compiler(raptorConfig);
+      const compilationPromise =  compiler(raptorConfig);
+      const bundlePromise =  bundle(raptorConfig);
+      await Promise.all([
+        compilationPromise,
+        bundlePromise
+      ])
     });
 
   program
@@ -24,7 +30,12 @@ export const cli = (process: NodeJS.Process): CommanderStatic => {
     .description("Start server")
     .action(async (cmd, options) => {
       const raptorConfig = await parseConfigFile(options.source_config);
-      await compiler(raptorConfig);
+      const compilationPromise =  compiler(raptorConfig);
+      const bundlePromise =  bundle(raptorConfig);
+      await Promise.all([
+        compilationPromise,
+        bundlePromise
+      ])
       startServer(raptorConfig, {});
     });
 

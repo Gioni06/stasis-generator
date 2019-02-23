@@ -5,6 +5,7 @@ import { TCase } from ".";
 import assert from "assert";
 import fs from "fs-extra";
 import path from "path";
+import { bundle } from '../../lib/bundler';
 
 function fileExists(pathString: string) {
   return new Promise((resolve, reject) => {
@@ -141,7 +142,7 @@ export function testBundlerPicksUpFiles(): TCase {
   async function run() {
     const config = await parseConfigFile(configFilePath);
     try {
-      await compiler(config);
+      await bundle(config);
 
       // check if files exists
       await fileExists(

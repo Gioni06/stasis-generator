@@ -1,10 +1,10 @@
-import { bundle } from "./bundler";
 import { Generator } from "./generator";
 import { HandlebarsEngine } from "./engine";
 import chalk from "chalk";
 import format from "rehype-format";
 import frontmatter from "remark-frontmatter";
 import fs from "fs-extra";
+import fsp from "fs-extra-promise";
 import glob from "glob";
 import html from "rehype-stringify";
 import markdown from "remark-parse";
@@ -13,6 +13,7 @@ import path from "path";
 import remark2rehype from "remark-rehype";
 import slugger from "slug";
 import unified from "unified";
+import { bundle } from './bundler';
 
 interface RaptorConfig {
   sourcePath: string;
@@ -42,7 +43,7 @@ interface Page {
  */
 async function write(pathString: string, content: string) {
   await fs.ensureFile(pathString);
-  await fs.writeFile(pathString, content, { encoding: "utf8" });
+  await fsp.writeFileAsync(pathString, content, { encoding: "utf8" });
 }
 
 const defaultConfig: RaptorConfig = {
@@ -73,7 +74,7 @@ export const compiler = async (options: RaptorConfig = defaultConfig) => {
 
   const pagesPromise: Array<Promise<Page | undefined>> = files
     .map(async f => {
-      const PromiseBuffer = fs.readFile(`${pagesPath}/${f}`);
+      const PromiseBuffer = fsp.readFileAsync(`${pagesPath}/${f}`);
       const buffer = await PromiseBuffer;
       try {
         const result = await unified()
@@ -147,7 +148,12 @@ export const compiler = async (options: RaptorConfig = defaultConfig) => {
   !isTestRunner && console.log(chalk.green("Building site..."));
 
   await Promise.all(finalPages);
-  await bundle(options);
+  // @todo investigate why this timeout is necessary (possible race condition)
+  await new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve()
+    }, 200)
+  })
   // display build time
   const timeDiff = process.hrtime(startTime);
   const duration = timeDiff[0] * 1000 + timeDiff[1] / 1e6;

@@ -1,14 +1,17 @@
-import chokidar from "chokidar";
+import chokidar, { FSWatcher } from "chokidar";
 import debounce from "lodash/debounce";
 import { bundle } from "./bundler";
 import { compiler } from "./compiler";
 import micro from "micro";
 import handler from "serve-handler";
+import opn from 'opn'
 
 export const startServer = async (raptorConfig: any, flags: any) => {
+	const srcPath = raptorConfig.basePath + "/" + raptorConfig.sourcePath
   const options = {
     public: raptorConfig.basePath + "/" + raptorConfig.publicPath,
-    srcPath: raptorConfig.basePath + "/" + raptorConfig.sourcePath
+    srcPath: raptorConfig.basePath + "/" + raptorConfig.sourcePath,
+		assetsPath: srcPath + "/" + raptorConfig.assetsPath
   };
 
   const server = micro(async (request: any, response: any) => {
@@ -19,16 +22,30 @@ export const startServer = async (raptorConfig: any, flags: any) => {
     });
   });
 
-  chokidar.watch(options.srcPath, { ignoreInitial: true }).on(
+  const pageWatcher: FSWatcher = chokidar.watch(options.srcPath, { ignoreInitial: true, ignored: options.assetsPath})
+
+	pageWatcher
+		.on(
     "all",
     debounce(async () => {
       await compiler(raptorConfig);
-      await bundle(raptorConfig);
-      console.log("Waiting for changes...");
     }, 500)
-  );
+  )
+
+
+	const assetWatcher = chokidar.watch(options.assetsPath, { ignoreInitial: true })
+
+	assetWatcher
+		.on(
+    "all",
+    debounce(async () => {
+      await bundle(raptorConfig);
+    }, 500)
+  )
+
 
   server.listen(3000, () => {
+		opn("http://localhost:3000")
     console.log("Running at http://localhost:3000");
-  });
+  })
 };

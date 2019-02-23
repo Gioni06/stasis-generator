@@ -2,9 +2,9 @@
   "name": "raptorgen",
   "version": "0.0.1",
   "description": "A minimal static site compiler",
-  "main": "./dist/index.js",
+  "main": "./dist/bin/cli.js",
   "bin": {
-    "raptorgen": "./dist/index.js"
+    "raptorgen": "./dist/bin/cli.js"
   },
   "files": [
     "src"
@@ -65,7 +65,11 @@
     "yaml": "^1.3.2"
   },
   "dependencies": {
+    "@types/fs-extra-promise": "^1.0.7",
+    "@types/opn": "^5.1.0",
+    "fs-extra-promise": "^1.0.1",
     "handlebars": "^4.1.0",
+    "opn": "^5.4.0",
     "prettier": "^1.16.4",
     "tslint": "^5.12.1",
     "tslint-config-prettier": "^1.18.0"

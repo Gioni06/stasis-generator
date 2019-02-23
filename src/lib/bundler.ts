@@ -1,7 +1,10 @@
 import Bundler from "parcel-bundler";
 import glob from "glob";
+import chalk from 'chalk';
 
-export const bundle = async (raptorConfig: { [key: string]: any }) => {
+  const isTestRunner = process.env.NODE_ENV === "test";
+
+export const bundle = async (raptorConfig: { [key: string]: any }) => {	
   // lookup files to bundle
   let files: string[];
   if (Array.isArray(raptorConfig.entryAssets)) {
@@ -55,5 +58,16 @@ export const bundle = async (raptorConfig: { [key: string]: any }) => {
   );
 
   const bundler = new Bundler(entryFiles, options);
-  return bundler.bundle();
+  
+  const startTime = process.hrtime();
+	  await bundler.bundle(raptorConfig);
+	// tslint:disable-next-line no-unused-expression
+  	!isTestRunner && console.log(chalk.green("Building bundle..."));
+	// display build time
+	const timeDiff = process.hrtime(startTime);
+	const duration = timeDiff[0] * 1000 + timeDiff[1] / 1e6;
+	// tslint:disable-next-line no-unused-expression
+	!isTestRunner &&
+		console.log(chalk.green(`Bundle built successfully in ${duration}ms`));
+		return
 };
