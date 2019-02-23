@@ -1,16 +1,16 @@
 import { bundle } from "./bundler";
 import { Generator } from "./generator";
-import { HandlebarsEngine } from './engine'
+import { HandlebarsEngine } from "./engine";
 import chalk from "chalk";
-import format from 'rehype-format'
+import format from "rehype-format";
 import frontmatter from "remark-frontmatter";
 import fs from "fs-extra";
 import glob from "glob";
-import html from 'rehype-stringify'
+import html from "rehype-stringify";
 import markdown from "remark-parse";
 import matter from "gray-matter";
 import path from "path";
-import remark2rehype from 'remark-rehype'
+import remark2rehype from "remark-rehype";
 import slugger from "slug";
 import unified from "unified";
 
@@ -52,7 +52,7 @@ const defaultConfig: RaptorConfig = {
 };
 
 export const compiler = async (options: RaptorConfig = defaultConfig) => {
-  const isTestRunner = process.env.NODE_ENV === 'test'
+  const isTestRunner = process.env.NODE_ENV === "test";
   const startTime = process.hrtime();
   const basePath = options.basePath;
   const sourcePath = path.resolve(basePath, options.sourcePath);
@@ -128,28 +128,31 @@ export const compiler = async (options: RaptorConfig = defaultConfig) => {
     });
 
   const constructPage = await Promise.all(pagesPromise);
-  const finalPages: Array<Promise<any>> = []
+  const finalPages: Array<Promise<any>> = [];
   constructPage.map((page, index, arr) => {
     if (page) {
-      const { content, ...rest } = page
-      generator.render({
-        body: page.content,
-        ...rest
-      }).then((renderResult) => {
-        finalPages.push(write(page.destinationPath || "", renderResult))
-      })
+      const { content, ...rest } = page;
+      generator
+        .render({
+          body: page.content,
+          ...rest
+        })
+        .then(renderResult => {
+          finalPages.push(write(page.destinationPath || "", renderResult));
+        });
     }
   });
-  
+
   // tslint:disable-next-line no-unused-expression
   !isTestRunner && console.log(chalk.green("Building site..."));
 
-  await Promise.all(finalPages)
-  await bundle(options)
+  await Promise.all(finalPages);
+  await bundle(options);
   // display build time
   const timeDiff = process.hrtime(startTime);
   const duration = timeDiff[0] * 1000 + timeDiff[1] / 1e6;
   // tslint:disable-next-line no-unused-expression
-  !isTestRunner && console.log(chalk.green(`Site built successfully in ${duration}ms`));
-  return
+  !isTestRunner &&
+    console.log(chalk.green(`Site built successfully in ${duration}ms`));
+  return;
 };
