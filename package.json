@@ -11,7 +11,7 @@
   ],
   "scripts": {
     "start": "tsc && node ./dist/bin/cli build -s src/tests/fixtures/test-project/raptorgen.config.json src/tests/fixtures/test-project",
-    "test": "NODE_ENV=test ts-node ./src/tests/cases/index.ts",
+    "test": "NODE_ENV=test ts-node --files ./src/tests/cases/index.ts",
     "build": "NODE_ENV=production tsc",
     "run": "node ./dist/bin/cli build -s src/tests/fixtures/test-project/raptorgen.config.json src/tests/fixtures/test-project",
     "serve": "tsc && node ./dist/bin/cli serve -s src/tests/fixtures/test-project/raptorgen.config.json src/tests/fixtures/test-project",
