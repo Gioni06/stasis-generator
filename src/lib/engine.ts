@@ -25,10 +25,6 @@ export class HandlebarsEngine implements TemplateEngine{
 		
 	}
 
-	/**
-	 * 
-	 * @param props any
-	 */
 	public async render(props: any) {
 		const template = handlebars.compile(fs.readFileSync(this.options.layoutsDir + '/' + (props.data.layout ? props.data.layout + '.hbs' : 'base.hbs'), { encoding: 'utf8'}))
 		return template(props)
