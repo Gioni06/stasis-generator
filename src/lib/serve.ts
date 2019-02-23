@@ -2,9 +2,8 @@ import chokidar from 'chokidar'
 import debounce from 'lodash/debounce'
 import { bundle } from './bundler';
 import { compiler } from './compiler';
-
-const micro = require('micro')
-const handler = require('serve-handler')
+import micro from 'micro'
+import handler from 'serve-handler'
 
 export const startServer = async (raptorConfig: any, flags: any) => {
 

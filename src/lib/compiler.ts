@@ -1,26 +1,18 @@
-import path from "path";
-
-import glob from "glob";
-
-import slugger from "slug";
-
-import chalk from "chalk";
-
-import unified from "unified";
-
-import fs from "fs-extra";
-
-import matter from "gray-matter";
-
 import { bundle } from "./bundler";
-import { Generator, HandlebarsEngine } from "./generator";
-
-const frontmatter = require("remark-frontmatter");
-let markdown = require('remark-parse')
-let remark2rehype = require('remark-rehype')
-let doc = require('rehype-document')
-let format = require('rehype-format')
-let html = require('rehype-stringify')
+import { Generator } from "./generator";
+import { HandlebarsEngine } from './engine'
+import chalk from "chalk";
+import format from 'rehype-format'
+import frontmatter from "remark-frontmatter";
+import fs from "fs-extra";
+import glob from "glob";
+import html from 'rehype-stringify'
+import markdown from "remark-parse";
+import matter from "gray-matter";
+import path from "path";
+import remark2rehype from 'remark-rehype'
+import slugger from "slug";
+import unified from "unified";
 
 interface RaptorConfig {
   sourcePath: string;
@@ -45,12 +37,12 @@ interface Page {
 
 /**
  * Write a file with content to dist
- * @param path Destination Path
+ * @param pathString Destination Path
  * @param content File content
  */
-async function write(path: string, content: string) {
-  await fs.ensureFile(path);
-  await fs.writeFile(path, content, { encoding: "utf8" });
+async function write(pathString: string, content: string) {
+  await fs.ensureFile(pathString);
+  await fs.writeFile(pathString, content, { encoding: "utf8" });
 }
 
 const defaultConfig: RaptorConfig = {
@@ -149,6 +141,7 @@ export const compiler = async (options: RaptorConfig = defaultConfig) => {
     }
   });
   
+  // tslint:disable-next-line no-unused-expression
   !isTestRunner && console.log(chalk.green("Building site..."));
 
   await Promise.all(finalPages)
@@ -156,6 +149,7 @@ export const compiler = async (options: RaptorConfig = defaultConfig) => {
   // display build time
   const timeDiff = process.hrtime(startTime);
   const duration = timeDiff[0] * 1000 + timeDiff[1] / 1e6;
+  // tslint:disable-next-line no-unused-expression
   !isTestRunner && console.log(chalk.green(`Site built successfully in ${duration}ms`));
   return
 };

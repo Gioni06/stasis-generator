@@ -1,7 +1,5 @@
-import { stringify } from "querystring";
-
-const Bundler = require('parcel-bundler')
-const glob = require('glob')
+import Bundler from 'parcel-bundler';
+import glob from 'glob';
 
 export const bundle = async (raptorConfig: { [key: string]: any}) => {
 	  
