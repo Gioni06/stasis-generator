@@ -16,12 +16,9 @@ export const cli = (process: NodeJS.Process): CommanderStatic => {
     .description("Run the compiler")
     .action(async (cmd, options) => {
       const raptorConfig = await parseConfigFile(options.source_config);
-      const compilationPromise =  compiler(raptorConfig);
-      const bundlePromise =  bundle(raptorConfig);
-      await Promise.all([
-        compilationPromise,
-        bundlePromise
-      ])
+      const compilationPromise = compiler(raptorConfig);
+      const bundlePromise = bundle(raptorConfig);
+      await Promise.all([compilationPromise, bundlePromise]);
     });
 
   program
@@ -30,12 +27,9 @@ export const cli = (process: NodeJS.Process): CommanderStatic => {
     .description("Start server")
     .action(async (cmd, options) => {
       const raptorConfig = await parseConfigFile(options.source_config);
-      const compilationPromise =  compiler(raptorConfig);
-      const bundlePromise =  bundle(raptorConfig);
-      await Promise.all([
-        compilationPromise,
-        bundlePromise
-      ])
+      const compilationPromise = compiler(raptorConfig);
+      const bundlePromise = bundle(raptorConfig);
+      await Promise.all([compilationPromise, bundlePromise]);
       startServer(raptorConfig, {});
     });
 

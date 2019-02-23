@@ -13,7 +13,7 @@ import path from "path";
 import remark2rehype from "remark-rehype";
 import slugger from "slug";
 import unified from "unified";
-import { bundle } from './bundler';
+import { bundle } from "./bundler";
 
 interface RaptorConfig {
   sourcePath: string;
@@ -151,9 +151,9 @@ export const compiler = async (options: RaptorConfig = defaultConfig) => {
   // @todo investigate why this timeout is necessary (possible race condition)
   await new Promise((resolve, reject) => {
     setTimeout(() => {
-      resolve()
-    }, 200)
-  })
+      resolve();
+    }, 200);
+  });
   // display build time
   const timeDiff = process.hrtime(startTime);
   const duration = timeDiff[0] * 1000 + timeDiff[1] / 1e6;

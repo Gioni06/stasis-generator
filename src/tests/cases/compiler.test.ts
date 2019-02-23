@@ -5,7 +5,7 @@ import { TCase } from ".";
 import assert from "assert";
 import fs from "fs-extra";
 import path from "path";
-import { bundle } from '../../lib/bundler';
+import { bundle } from "../../lib/bundler";
 
 function fileExists(pathString: string) {
   return new Promise((resolve, reject) => {
