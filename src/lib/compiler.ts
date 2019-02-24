@@ -19,13 +19,15 @@ interface RaptorConfig {
   publicPath: string;
   basePath: string;
   staticPath: string;
+  assetsPath: string;
 }
 
 const defaultConfig: RaptorConfig = {
   sourcePath: "src",
   publicPath: "public",
   basePath: "/",
-  staticPath: "static"
+  staticPath: "static",
+  assetsPath: "assets"
 };
 
 export const compiler = async (options: RaptorConfig = defaultConfig) => {
@@ -54,7 +56,18 @@ export const compiler = async (options: RaptorConfig = defaultConfig) => {
   const generator = new Generator(engine);
 
   // clean output directory
-  await fs.emptyDir(publicPath);
+  const deletionList = glob.sync(`!(${options.staticPath}|${options.assetsPath})**`, { cwd: publicPath })
+  for(const d of deletionList) {
+      const p = path.resolve(publicPath, d)
+      const stats = fs.statSync(p);
+      if(stats.isFile()) {
+        await fsp.removeAsync(p)
+      }
+
+      if(stats.isDirectory()) {
+        await fsp.emptyDir(p)
+      }
+  }
 
   // Collect a list of files
   const files: string[] = glob.sync("**/*.@(md|markdown)", { cwd: pagesPath });
