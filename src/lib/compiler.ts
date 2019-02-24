@@ -11,11 +11,8 @@ import markdown from "remark-parse";
 import matter from "gray-matter";
 import path from "path";
 import remark2rehype from "remark-rehype";
-import slugger from "slug";
 import unified from "unified";
-import { bundle } from "./bundler";
 import { Page as MyPage } from "./page";
-import { reject } from "bluebird";
 
 interface RaptorConfig {
   sourcePath: string;
