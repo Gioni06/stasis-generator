@@ -2,6 +2,7 @@ import fs from "fs-extra";
 import glob from "glob";
 import handlebars from "handlebars";
 import path from "path";
+import fsp from "fs-extra-promise";
 
 export interface HandlebarsOptions {
   layoutsDir: string;
@@ -16,6 +17,7 @@ export interface TemplateEngine {
 }
 
 export class HandlebarsEngine implements TemplateEngine {
+  private cache: { [key: string]: string };
   constructor(private options: HandlebarsOptions) {
     const partials = glob.sync("**/*.@(hbs|handlebars)", {
       cwd: options.partialsDir
@@ -31,17 +33,31 @@ export class HandlebarsEngine implements TemplateEngine {
     handlebars.registerHelper("json", obj => {
       return JSON.stringify(obj);
     });
+
+    this.cache = {};
   }
 
   public async render(props: any) {
-    const template = handlebars.compile(
-      fs.readFileSync(
-        this.options.layoutsDir +
-          "/" +
-          (props.data.layout ? props.data.layout + ".hbs" : "base.hbs"),
-        { encoding: "utf8" }
-      )
-    );
+    const tpl = await this.getTemplate(props.data.layout);
+    const template = handlebars.compile(tpl);
     return template(props);
+  }
+
+  private async getTemplate(layout: string) {
+    const templatePath =
+      this.options.layoutsDir + "/" + (layout ? layout + ".hbs" : "base.hbs");
+
+    let tplString: string;
+
+    if (this.cache[templatePath]) {
+      tplString = this.cache[templatePath];
+    } else {
+      tplString = await fsp.readFileAsync(
+        this.options.layoutsDir + "/" + (layout ? layout + ".hbs" : "base.hbs"),
+        { encoding: "utf8" }
+      );
+      this.cache[templatePath] = tplString;
+    }
+    return tplString;
   }
 }
