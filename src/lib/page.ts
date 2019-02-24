@@ -1,5 +1,13 @@
 import slug = require("slug");
 
+export interface SerializedPage {
+	content: string;
+	data: { [key: string]: any };
+	excerpt: string;
+	pageName: string;
+	destinationPath: string;
+}
+
 export class Page {
   constructor(
     private content: string,
@@ -39,5 +47,15 @@ export class Page {
 
   public getExcerpt(): string {
     return this.excerpt;
+  }
+
+  public serialize(): SerializedPage  {
+	  return {
+		  content: this.htmlContent(),
+		  data: this.getMeta(),
+		  excerpt: this.getExcerpt(),
+		  pageName: this.getName(),
+		  destinationPath: this.getDestinationPath()
+	  }
   }
 }
