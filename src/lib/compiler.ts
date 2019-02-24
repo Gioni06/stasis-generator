@@ -21,27 +21,14 @@ interface RaptorConfig {
   sourcePath: string;
   publicPath: string;
   basePath: string;
-}
-
-interface Page {
-  slug: string;
-  data: { [key: string]: any };
-  excerpt?: string;
-  content: string;
-  source: {
-    root: string;
-    dir: string;
-    base: string;
-    ext: string;
-    name: string;
-  };
-  destinationPath?: string;
+  staticPath: string;
 }
 
 const defaultConfig: RaptorConfig = {
   sourcePath: "src",
   publicPath: "public",
-  basePath: "/"
+  basePath: "/",
+  staticPath: "static"
 };
 
 export const compiler = async (options: RaptorConfig = defaultConfig) => {
@@ -50,6 +37,8 @@ export const compiler = async (options: RaptorConfig = defaultConfig) => {
   const basePath = options.basePath;
   const sourcePath = path.resolve(basePath, options.sourcePath);
   const publicPath = path.resolve(basePath, options.publicPath);
+  const staticPath = path.resolve(sourcePath, options.staticPath);
+  const staticDestinationPath = path.resolve(publicPath, options.staticPath);
   const pagesPath = `${sourcePath}/pages`;
 
   async function writeFile(destination: string, content: string) {
@@ -106,6 +95,7 @@ export const compiler = async (options: RaptorConfig = defaultConfig) => {
   }
 
   for (const p of pages) {
+    // generate rendered html result
     const htmlOutput = await generator.render({
       body: p.htmlContent(),
       data: p.getMeta(),
@@ -113,8 +103,15 @@ export const compiler = async (options: RaptorConfig = defaultConfig) => {
       slug: p.getSlug(),
       excerpt: p.getExcerpt()
     });
+    // wirte result to disk
     await writeFile(p.getDestinationPath(), htmlOutput);
   }
+
+  // copy static asset folder
+  await fsp.copyAsync(staticPath, staticDestinationPath, {
+    overwrite: true,
+    preserveTimestamps: true
+  });
 
   // display build time
   const timeDiff = process.hrtime(startTime);

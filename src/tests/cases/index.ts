@@ -5,7 +5,8 @@ import {
   testClearDistDirectory,
   testGeneratesPrettyUrls,
   testRendersPageWithCustomLayout,
-  testRendersPageWithDefaultLayout
+  testRendersPageWithDefaultLayout,
+  testCopyStaticFolder
 } from "./compiler.test";
 import { testLoadRaptorConfig } from "./utils.test";
 import { testPageDestinationPath, testPageSlug } from "./page.test";
@@ -54,6 +55,7 @@ const cases: TCase[] = [
   testRendersPageWithCustomLayout(),
   testGeneratesPrettyUrls(),
   testBundlerPicksUpFiles(),
+  testCopyStaticFolder(),
   testPageDestinationPath(),
   testPageSlug()
 ];

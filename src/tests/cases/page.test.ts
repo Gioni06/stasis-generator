@@ -56,7 +56,7 @@ export function testPageDestinationPath(): TCase {
   }
 
   return {
-    description: "It should handle pages objects",
+    description: "It should handle page destination paths",
     run
   };
 }
@@ -93,7 +93,7 @@ export function testPageSlug(): TCase {
   }
 
   return {
-    description: "It should handle pages objects",
+    description: "It should page slugs",
     run
   };
 }

@@ -191,3 +191,41 @@ export function testBundlerPicksUpFiles(): TCase {
     run
   };
 }
+
+
+export function testCopyStaticFolder(): TCase {
+  async function run() {
+    const config = await parseConfigFile(configFilePath);
+    try {
+      await bundle(config);
+
+      // check if files exists
+      await fileExists(
+        config.basePath +
+          "/" +
+          config.sourcePath +
+          "/" +
+          config.staticPath +
+          "/" +
+          "demo.png"
+      );
+      await fileExists(
+        config.basePath +
+          "/" +
+          config.publicPath +
+          "/" +
+          config.staticPath +
+          "/" +
+          "demo.png"
+      );
+      return true;
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  return {
+    description: "It copies static asset folder",
+    run
+  };
+}
