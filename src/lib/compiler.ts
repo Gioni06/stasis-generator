@@ -12,7 +12,7 @@ import matter from "gray-matter";
 import path from "path";
 import remark2rehype from "remark-rehype";
 import unified from "unified";
-import { Page as MyPage } from "./page";
+import { Page } from "./page";
 
 interface RaptorConfig {
   sourcePath: string;
@@ -58,7 +58,7 @@ export const compiler = async (options: RaptorConfig = defaultConfig) => {
 
   // Collect a list of files
   const files: string[] = glob.sync("**/*.@(md|markdown)", { cwd: pagesPath });
-  const pages: MyPage[] = [];
+  const pages: Page[] = [];
 
   for (const f of files) {
     // raw content of markdown source
@@ -81,7 +81,7 @@ export const compiler = async (options: RaptorConfig = defaultConfig) => {
     });
     const { dir, name } = path.parse(f);
 
-    const page = new MyPage(
+    const page = new Page(
       content,
       data,
       excerpt,
