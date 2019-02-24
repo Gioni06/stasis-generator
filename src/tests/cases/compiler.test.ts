@@ -192,7 +192,6 @@ export function testBundlerPicksUpFiles(): TCase {
   };
 }
 
-
 export function testCopyStaticFolder(): TCase {
   async function run() {
     const config = await parseConfigFile(configFilePath);
