@@ -14,6 +14,8 @@ import remark2rehype from "remark-rehype";
 import slugger from "slug";
 import unified from "unified";
 import { bundle } from "./bundler";
+import { Page as MyPage } from "./page";
+import { reject } from "bluebird";
 
 interface RaptorConfig {
   sourcePath: string;
@@ -36,16 +38,6 @@ interface Page {
   destinationPath?: string;
 }
 
-/**
- * Write a file with content to dist
- * @param pathString Destination Path
- * @param content File content
- */
-async function write(pathString: string, content: string) {
-  await fs.ensureFile(pathString);
-  await fsp.writeFileAsync(pathString, content, { encoding: "utf8" });
-}
-
 const defaultConfig: RaptorConfig = {
   sourcePath: "src",
   publicPath: "public",
@@ -60,6 +52,14 @@ export const compiler = async (options: RaptorConfig = defaultConfig) => {
   const publicPath = path.resolve(basePath, options.publicPath);
   const pagesPath = `${sourcePath}/pages`;
 
+  async function writeFile(destination: string, content: string) {
+    await fs.ensureFile(destination);
+    await fsp.writeFileAsync(destination, content, { encoding: "utf8" });
+  }
+
+  // tslint:disable-next-line no-unused-expression
+  !isTestRunner && console.log(chalk.green("Building site..."));
+
   const engine = new HandlebarsEngine({
     partialsDir: `${sourcePath}/partials`,
     layoutsDir: `${sourcePath}/layouts`
@@ -70,90 +70,52 @@ export const compiler = async (options: RaptorConfig = defaultConfig) => {
   // clean output directory
   await fs.emptyDir(publicPath);
 
+  // Collect a list of files
   const files: string[] = glob.sync("**/*.@(md|markdown)", { cwd: pagesPath });
+  const pages: MyPage[] = [];
 
-  const pagesPromise: Array<Promise<Page | undefined>> = files
-    .map(async f => {
-      const PromiseBuffer = fsp.readFileAsync(`${pagesPath}/${f}`);
-      const buffer = await PromiseBuffer;
-      try {
-        const result = await unified()
-          .use(markdown)
-          .use(frontmatter, ["yaml", "toml"])
-          .use(remark2rehype)
-          .use(format)
-          .use(html)
-          .process(buffer.toString());
-        const { content } = matter(String(result), {
-          excerpt: true
-        });
-        const { data, excerpt } = matter(String(buffer.toString()), {
-          excerpt: true
-        });
-        const { root, dir, base, ext, name } = path.parse(f);
-        const slug = slugger(name);
-        return {
-          slug,
-          data,
-          excerpt,
-          content,
-          source: { root, dir, base, ext, name }
-        };
-      } catch (e) {
-        console.log(chalk.red(e.message));
-      }
-    })
-    .map(async page => {
-      // generate destination path
-      try {
-        const p = await page;
-        let destinationPath = "";
-        if (p) {
-          if (p.source.name !== "index") {
-            // create folder at dir path with slug name of page and insert content as index.html inside folder
-            destinationPath = `${publicPath}${p.source.dir &&
-              "/" + p.source.dir}/${p.slug}/index.html`;
-          } else {
-            // create folder at dir path and place index.html file inside folder
-            destinationPath = `${publicPath}/${p.source.dir}/${
-              p.source.name
-            }.html`;
-          }
-          return { ...p, destinationPath };
-        } else {
-          throw new Error();
-        }
-      } catch (e) {
-        throw new Error();
-      }
+  for (const f of files) {
+    // raw content of markdown source
+    const fContent: string = await fsp.readFileAsync(`${pagesPath}/${f}`, {
+      encoding: "utf8"
     });
+    const result = await unified()
+      .use(markdown)
+      .use(frontmatter, ["yaml", "toml"])
+      .use(remark2rehype)
+      .use(format)
+      .use(html)
+      .process(fContent);
 
-  const constructPage = await Promise.all(pagesPromise);
-  const finalPages: Array<Promise<any>> = [];
-  constructPage.map((page, index, arr) => {
-    if (page) {
-      const { content, ...rest } = page;
-      generator
-        .render({
-          body: page.content,
-          ...rest
-        })
-        .then(renderResult => {
-          finalPages.push(write(page.destinationPath || "", renderResult));
-        });
-    }
-  });
+    const { content } = matter(String(result), {
+      excerpt: true
+    });
+    const { data, excerpt } = matter(String(fContent), {
+      excerpt: true
+    });
+    const { dir, name } = path.parse(f);
 
-  // tslint:disable-next-line no-unused-expression
-  !isTestRunner && console.log(chalk.green("Building site..."));
+    const page = new MyPage(
+      content,
+      data,
+      excerpt,
+      name,
+      `${publicPath}${dir && "/" + dir}`
+    );
+    pages.push(page);
+  }
 
-  await Promise.all(finalPages);
-  // @todo investigate why this timeout is necessary (possible race condition)
-  await new Promise((resolve, reject) => {
-    setTimeout(() => {
-      resolve();
-    }, 200);
-  });
+  for (const p of pages) {
+    const htmlOutput = await generator.render({
+      body: p.htmlContent(),
+      data: p.getMeta(),
+      title: p.getName(),
+      slug: p.getSlug(),
+      excerpt: p.getExcerpt()
+    });
+    await writeFile(p.getDestinationPath(), htmlOutput);
+  }
+
   // display build time
   const timeDiff = process.hrtime(startTime);
   const duration = timeDiff[0] * 1000 + timeDiff[1] / 1e6;

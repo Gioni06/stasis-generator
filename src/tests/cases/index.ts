@@ -8,6 +8,7 @@ import {
   testRendersPageWithDefaultLayout
 } from "./compiler.test";
 import { testLoadRaptorConfig } from "./utils.test";
+import { testPageDestinationPath, testPageSlug } from "./page.test";
 
 export interface TCase {
   description: string;
@@ -52,7 +53,9 @@ const cases: TCase[] = [
   testRendersPageWithDefaultLayout(),
   testRendersPageWithCustomLayout(),
   testGeneratesPrettyUrls(),
-  testBundlerPicksUpFiles()
+  testBundlerPicksUpFiles(),
+  testPageDestinationPath(),
+  testPageSlug()
 ];
 
 executeSyncTests(cases);
