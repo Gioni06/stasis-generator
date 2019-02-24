@@ -56,17 +56,20 @@ export const compiler = async (options: RaptorConfig = defaultConfig) => {
   const generator = new Generator(engine);
 
   // clean output directory
-  const deletionList = glob.sync(`!(${options.staticPath}|${options.assetsPath})**`, { cwd: publicPath })
-  for(const d of deletionList) {
-      const p = path.resolve(publicPath, d)
-      const stats = fs.statSync(p);
-      if(stats.isFile()) {
-        await fsp.removeAsync(p)
-      }
+  const deletionList = glob.sync(
+    `!(${options.staticPath}|${options.assetsPath})**`,
+    { cwd: publicPath }
+  );
+  for (const d of deletionList) {
+    const p = path.resolve(publicPath, d);
+    const stats = fs.statSync(p);
+    if (stats.isFile()) {
+      await fsp.removeAsync(p);
+    }
 
-      if(stats.isDirectory()) {
-        await fsp.emptyDir(p)
-      }
+    if (stats.isDirectory()) {
+      await fsp.emptyDir(p);
+    }
   }
 
   // Collect a list of files
@@ -111,7 +114,8 @@ export const compiler = async (options: RaptorConfig = defaultConfig) => {
       data: p.getMeta(),
       title: p.getName(),
       slug: p.getSlug(),
-      excerpt: p.getExcerpt()
+      excerpt: p.getExcerpt(),
+      loop: [...pages.map(s => s.serialize())]
     });
     // wirte result to disk
     await writeFile(p.getDestinationPath(), htmlOutput);

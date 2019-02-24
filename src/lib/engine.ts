@@ -27,6 +27,10 @@ export class HandlebarsEngine implements TemplateEngine {
         fs.readFileSync(options.partialsDir + "/" + p, { encoding: "utf8" })
       );
     });
+
+    handlebars.registerHelper("json", obj => {
+      return JSON.stringify(obj);
+    });
   }
 
   public async render(props: any) {
