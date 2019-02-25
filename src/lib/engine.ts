@@ -36,12 +36,13 @@ export class HandlebarsEngine implements TemplateEngine {
 
     const helpers = glob.sync("**/*.js", {cwd: options.helpersDir})
 
+    // Read handlebars helpers from /helpers directory.
     helpers.map((h: string) => {
       const { name } = path.parse(h);
       const relativeRequirePath = path.relative(__dirname, options.helpersDir + "/" + h)
       handlebars.registerHelper(name, require(relativeRequirePath));
     })
-    
+
     this.cache = {};
   }
 
