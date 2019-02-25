@@ -5,6 +5,8 @@ import { compiler } from "./compiler";
 import micro from "micro";
 import handler from "serve-handler";
 import opn from "opn";
+import range from 'lodash/range'
+import getPort from 'get-port'
 
 export const startServer = async (raptorConfig: any, flags: any) => {
   const srcPath = raptorConfig.basePath + "/" + raptorConfig.sourcePath;
@@ -45,8 +47,10 @@ export const startServer = async (raptorConfig: any, flags: any) => {
     }, 500)
   );
 
-  server.listen(3000, () => {
-    opn("http://localhost:3000");
-    console.log("Running at http://localhost:3000");
+  // Get a free port - Preferrers port 3000
+  const freePort = await getPort({port: [...range(3000, 3100, 1)]})
+  server.listen(freePort, () => {
+    opn("http://localhost:" + freePort);
+    console.log("Running at http://localhost:" + freePort);
   });
 };

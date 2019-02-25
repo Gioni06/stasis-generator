@@ -1,18 +1,31 @@
-import { Generator } from "./generator";
-import { HandlebarsEngine } from "./engine";
 import chalk from "chalk";
-import format from "rehype-format";
-import frontmatter from "remark-frontmatter";
-import fs from "fs-extra";
-import fsp from "fs-extra-promise";
-import glob from "glob";
-import html from "rehype-stringify";
-import markdown from "remark-parse";
+
 import matter from "gray-matter";
+
 import path from "path";
-import remark2rehype from "remark-rehype";
+
+import glob from "glob";
+
 import unified from "unified";
+
+import fs from "fs-extra";
+
+import markdown from "remark-parse";
+
+import format from "rehype-format";
+
+import remark2rehype from "remark-rehype";
+
+import html from "rehype-stringify";
+
+import fsp from "fs-extra-promise";
+
+import frontmatter from "remark-frontmatter";
+
+import { HandlebarsEngine } from "./engine";
+import { Generator } from "./generator";
 import { Page } from "./page";
+import orderBy from 'lodash/orderBy'
 
 interface RaptorConfig {
   sourcePath: string;
@@ -50,7 +63,8 @@ export const compiler = async (options: RaptorConfig = defaultConfig) => {
 
   const engine = new HandlebarsEngine({
     partialsDir: `${sourcePath}/partials`,
-    layoutsDir: `${sourcePath}/layouts`
+    layoutsDir: `${sourcePath}/layouts`,
+    helpersDir: `${sourcePath}/helpers`
   });
 
   const generator = new Generator(engine);
@@ -108,14 +122,16 @@ export const compiler = async (options: RaptorConfig = defaultConfig) => {
   }
 
   for (const p of pages) {
+    // serialize all pages so that themes can loop over them
+    const serializedPages = [...orderBy(pages.map(s => s.serialize(publicPath, s.getDestinationPath() === p.getDestinationPath())), ['relativePath'], "desc")]
     // generate rendered html result
     const htmlOutput = await generator.render({
       body: p.htmlContent(),
-      data: p.getMeta(),
+      meta: p.getMeta(),
       title: p.getName(),
       slug: p.getSlug(),
       excerpt: p.getExcerpt(),
-      loop: [...pages.map(s => s.serialize())]
+      pages: serializedPages
     });
     // wirte result to disk
     await writeFile(p.getDestinationPath(), htmlOutput);

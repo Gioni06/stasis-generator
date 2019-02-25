@@ -64,8 +64,10 @@
   },
   "dependencies": {
     "@types/fs-extra-promise": "^1.0.7",
+    "@types/get-port": "^4.0.1",
     "@types/opn": "^5.1.0",
     "fs-extra-promise": "^1.0.1",
+    "get-port": "^4.1.0",
     "handlebars": "^4.1.0",
     "opn": "^5.4.0",
     "prettier": "^1.16.4",

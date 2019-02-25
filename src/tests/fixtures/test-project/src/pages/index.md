@@ -1,3 +1,6 @@
+---
+title: front page
+---
 # Test fixture page
 This is a served page!
 - [Docs Page](/docs)

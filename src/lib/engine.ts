@@ -1,15 +1,19 @@
-import fs from "fs-extra";
 import glob from "glob";
-import handlebars from "handlebars";
+
 import path from "path";
+
+import chalk from 'chalk';
+
+import fs from "fs-extra";
+
+import handlebars from "handlebars";
+
 import fsp from "fs-extra-promise";
 
 export interface HandlebarsOptions {
   layoutsDir: string;
   partialsDir?: string;
-  helpers?: {
-    [helperName: string]: (args: any) => any;
-  };
+  helpersDir?: string;
 }
 
 export interface TemplateEngine {
@@ -30,15 +34,19 @@ export class HandlebarsEngine implements TemplateEngine {
       );
     });
 
-    handlebars.registerHelper("json", obj => {
-      return JSON.stringify(obj);
-    });
+    const helpers = glob.sync("**/*.js", {cwd: options.helpersDir})
 
+    helpers.map((h: string) => {
+      const { name } = path.parse(h);
+      const relativeRequirePath = path.relative(__dirname, options.helpersDir + "/" + h)
+      handlebars.registerHelper(name, require(relativeRequirePath));
+    })
+    
     this.cache = {};
   }
 
   public async render(props: any) {
-    const tpl = await this.getTemplate(props.data.layout);
+    const tpl = await this.getTemplate(props.meta.layout);
     const template = handlebars.compile(tpl);
     return template(props);
   }
