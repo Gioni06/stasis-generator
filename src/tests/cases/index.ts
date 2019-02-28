@@ -8,8 +8,8 @@ import {
   testRendersPageWithDefaultLayout,
   testCopyStaticFolder
 } from "./compiler.test";
-import { testLoadRaptorConfig } from "./utils.test";
 import { testPageDestinationPath, testPageSlug } from "./page.test";
+import { testLoadRaptorConfig } from "./utils.test";
 
 export interface TCase {
   description: string;
@@ -50,14 +50,14 @@ export async function executeSyncTests(testCases: TCase[]) {
 
 const cases: TCase[] = [
   testLoadRaptorConfig(),
-  testClearDistDirectory(),
-  testRendersPageWithDefaultLayout(),
-  testRendersPageWithCustomLayout(),
-  testGeneratesPrettyUrls(),
-  testBundlerPicksUpFiles(),
-  testCopyStaticFolder(),
-  testPageDestinationPath(),
-  testPageSlug()
+  //testClearDistDirectory(),
+  //testRendersPageWithDefaultLayout(),
+  //testRendersPageWithCustomLayout(),
+  //testGeneratesPrettyUrls(),
+  //testBundlerPicksUpFiles(),
+  //testCopyStaticFolder(),
+  //testPageDestinationPath(),
+  //testPageSlug()
 ];
 
 executeSyncTests(cases);
