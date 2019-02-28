@@ -49,15 +49,19 @@ export async function executeSyncTests(testCases: TCase[]) {
 }
 
 (async () => {
+  try {
   await executeSyncTests([testLoadRaptorConfig()])
   await executeSyncTests([ testClearDistDirectory()])
   await executeSyncTests([
     testRendersPageWithDefaultLayout(),
     testRendersPageWithCustomLayout(),
     testGeneratesPrettyUrls(),
-    testBundlerPicksUpFiles(),
+    /* testBundlerPicksUpFiles(), */
     testCopyStaticFolder(),
     testPageDestinationPath(),
     testPageSlug()
   ])
+  } catch(e) {
+    throw e
+  } 
 })()
