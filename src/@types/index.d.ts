@@ -7,5 +7,6 @@ declare module "remark-rehype";
 declare module "rehype-document";
 declare module "rehype-format";
 declare module "rehype-stringify";
+declare module "rehype-raw";
 declare module "parcel-bundler";
 declare module "glob";

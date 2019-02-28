@@ -7,7 +7,7 @@ import { TCase } from ".";
 export function testLoadRaptorConfig(): TCase {
   async function run() {
     const config = await parseConfigFile(
-      path.resolve(__dirname, "../fixtures/test-project/raptorgen.config.json")
+      path.resolve(__dirname, "../fixtures/test-project/stasis.config.json")
     );
     try {
       assert.deepEqual(config, {

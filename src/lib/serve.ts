@@ -5,15 +5,15 @@ import { compiler } from "./compiler";
 import micro from "micro";
 import handler from "serve-handler";
 import opn from "opn";
-import range from 'lodash/range'
-import getPort from 'get-port'
+import range from "lodash/range";
+import getPort from "get-port";
 
-export const startServer = async (raptorConfig: any, flags: any) => {
-  const srcPath = raptorConfig.basePath + "/" + raptorConfig.sourcePath;
+export const startServer = async (stasisConfig: any, flags: any) => {
+  const srcPath = stasisConfig.basePath + "/" + stasisConfig.sourcePath;
   const options = {
-    public: raptorConfig.basePath + "/" + raptorConfig.publicPath,
-    srcPath: raptorConfig.basePath + "/" + raptorConfig.sourcePath,
-    assetsPath: srcPath + "/" + raptorConfig.assetsPath
+    public: stasisConfig.basePath + "/" + stasisConfig.publicPath,
+    srcPath: stasisConfig.basePath + "/" + stasisConfig.sourcePath,
+    assetsPath: srcPath + "/" + stasisConfig.assetsPath
   };
 
   const server = micro(async (request: any, response: any) => {
@@ -32,7 +32,7 @@ export const startServer = async (raptorConfig: any, flags: any) => {
   pageWatcher.on(
     "all",
     debounce(async () => {
-      await compiler(raptorConfig);
+      await compiler(stasisConfig);
     }, 500)
   );
 
@@ -43,12 +43,12 @@ export const startServer = async (raptorConfig: any, flags: any) => {
   assetWatcher.on(
     "all",
     debounce(async () => {
-      await bundle(raptorConfig);
+      await bundle(stasisConfig);
     }, 500)
   );
 
-  // Get a free port - Preferrers port 3000
-  const freePort = await getPort({port: [...range(3000, 3100, 1)]})
+  // Get a free port - Prefer port 3000
+  const freePort = await getPort({ port: [...range(3000, 3100, 1)] });
   server.listen(freePort, () => {
     opn("http://localhost:" + freePort);
     console.log("Running at http://localhost:" + freePort);

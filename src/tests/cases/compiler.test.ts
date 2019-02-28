@@ -34,7 +34,7 @@ function fileNotExists(pathString: string) {
 }
 const configFilePath = path.resolve(
   __dirname,
-  "../fixtures/test-project/raptorgen.config.json"
+  "../fixtures/test-project/stasis.config.json"
 );
 
 export function testClearDistDirectory(): TCase {

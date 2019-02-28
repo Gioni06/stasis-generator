@@ -15,9 +15,9 @@ export const cli = (process: NodeJS.Process): CommanderStatic => {
     .option("-s, --source_config <path>", "The source of the project")
     .description("Run the compiler")
     .action(async (cmd, options) => {
-      const raptorConfig = await parseConfigFile(options.source_config);
-      const compilationPromise = compiler(raptorConfig);
-      const bundlePromise = bundle(raptorConfig);
+      const stasisConfig = await parseConfigFile(options.source_config);
+      const compilationPromise = compiler(stasisConfig);
+      const bundlePromise = bundle(stasisConfig);
       await Promise.all([compilationPromise, bundlePromise]);
     });
 
@@ -26,11 +26,11 @@ export const cli = (process: NodeJS.Process): CommanderStatic => {
     .option("-s, --source_config <path>", "The source of the project")
     .description("Start server")
     .action(async (cmd, options) => {
-      const raptorConfig = await parseConfigFile(options.source_config);
-      const compilationPromise = compiler(raptorConfig);
-      const bundlePromise = bundle(raptorConfig);
+      const stasisConfig = await parseConfigFile(options.source_config);
+      const compilationPromise = compiler(stasisConfig);
+      const bundlePromise = bundle(stasisConfig);
       await Promise.all([compilationPromise, bundlePromise]);
-      startServer(raptorConfig, {});
+      startServer(stasisConfig, {});
     });
 
   program.parse(process.argv);

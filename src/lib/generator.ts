@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import chalk from "chalk";
 
 import { TemplateEngine } from "./engine";
 
@@ -8,9 +8,9 @@ export class Generator {
   public async render(props: any) {
     try {
       return await this.engine.render(props);
-    } catch(e) {
-      console.log(chalk.red(e.message))
-      throw e
+    } catch (e) {
+      console.log(chalk.red(e.message));
+      throw e;
     }
   }
 }

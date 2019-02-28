@@ -1,6 +1,6 @@
 import slug from "slug";
 
-import path, { relative } from 'path';
+import path, { relative } from "path";
 
 export interface SerializedPage {
   meta: { [key: string]: any };
@@ -42,7 +42,6 @@ export class Page {
     }
   }
 
-
   public getMeta(): { [key: string]: any } {
     return this.data;
   }
@@ -50,10 +49,13 @@ export class Page {
   public getExcerpt(): string {
     return this.excerpt;
   }
-  
-  public serialize(publicPath: string, active: boolean = false): SerializedPage {
+
+  public serialize(
+    publicPath: string,
+    active: boolean = false
+  ): SerializedPage {
     // Create path relative to output dir. Can be used to produce links to pages
-    const relativePath = this.getDestinationPath().replace(publicPath, '')
+    const relativePath = this.getDestinationPath().replace(publicPath, "");
     return {
       meta: this.getMeta(),
       excerpt: this.getExcerpt(),

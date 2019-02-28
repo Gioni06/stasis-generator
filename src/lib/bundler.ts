@@ -4,40 +4,40 @@ import chalk from "chalk";
 
 const isTestRunner = process.env.NODE_ENV === "test";
 
-export const bundle = async (raptorConfig: { [key: string]: any }) => {
+export const bundle = async (stasisConfig: { [key: string]: any }) => {
   // lookup files to bundle
   let files: string[];
-  if (Array.isArray(raptorConfig.entryAssets)) {
-    files = raptorConfig.entryAssets.reduce((res, value, index) => {
+  if (Array.isArray(stasisConfig.entryAssets)) {
+    files = stasisConfig.entryAssets.reduce((res, value, index) => {
       const f = glob.sync(value, {
         cwd:
-          raptorConfig.basePath +
+          stasisConfig.basePath +
           "/" +
-          raptorConfig.sourcePath +
+          stasisConfig.sourcePath +
           "/" +
-          raptorConfig.assetsPath
+          stasisConfig.assetsPath
       });
       return (res = [...res, ...f]);
     }, []);
   } else {
-    files = glob.sync(raptorConfig.entryAssets, {
+    files = glob.sync(stasisConfig.entryAssets, {
       cwd:
-        raptorConfig.basePath +
+        stasisConfig.basePath +
         "/" +
-        raptorConfig.sourcePath +
+        stasisConfig.sourcePath +
         "/" +
-        raptorConfig.assetsPath
+        stasisConfig.assetsPath
     });
   }
 
   // create bundler options
   const options = {
     outDir:
-      raptorConfig.basePath +
+      stasisConfig.basePath +
       "/" +
-      raptorConfig.publicPath +
+      stasisConfig.publicPath +
       "/" +
-      raptorConfig.assetsPath,
+      stasisConfig.assetsPath,
     cache: false,
     target: "browser",
     sourceMaps: false,
@@ -48,11 +48,11 @@ export const bundle = async (raptorConfig: { [key: string]: any }) => {
 
   const entryFiles = files.map(
     f =>
-      raptorConfig.basePath +
+      stasisConfig.basePath +
       "/" +
-      raptorConfig.sourcePath +
+      stasisConfig.sourcePath +
       "/" +
-      raptorConfig.assetsPath +
+      stasisConfig.assetsPath +
       "/" +
       f
   );
@@ -60,7 +60,7 @@ export const bundle = async (raptorConfig: { [key: string]: any }) => {
   const bundler = new Bundler(entryFiles, options);
 
   const startTime = process.hrtime();
-  await bundler.bundle(raptorConfig);
+  await bundler.bundle(stasisConfig);
   // tslint:disable-next-line no-unused-expression
   !isTestRunner && console.log(chalk.green("Building bundle..."));
   // display build time

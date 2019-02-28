@@ -1,31 +1,20 @@
 import chalk from "chalk";
-
 import matter from "gray-matter";
-
 import path from "path";
-
 import glob from "glob";
-
 import unified from "unified";
-
 import fs from "fs-extra";
-
 import markdown from "remark-parse";
-
 import format from "rehype-format";
-
 import remark2rehype from "remark-rehype";
-
 import html from "rehype-stringify";
-
+import raw from "rehype-raw";
 import fsp from "fs-extra-promise";
-
 import frontmatter from "remark-frontmatter";
-
 import { HandlebarsEngine } from "./engine";
 import { Generator } from "./generator";
 import { Page } from "./page";
-import orderBy from 'lodash/orderBy'
+import orderBy from "lodash/orderBy";
 
 interface RaptorConfig {
   sourcePath: string;
@@ -98,7 +87,8 @@ export const compiler = async (options: RaptorConfig = defaultConfig) => {
     const result = await unified()
       .use(markdown)
       .use(frontmatter, ["yaml", "toml"])
-      .use(remark2rehype)
+      .use(remark2rehype, { allowDangerousHTML: true })
+      .use(raw)
       .use(format)
       .use(html)
       .process(fContent);
@@ -123,7 +113,18 @@ export const compiler = async (options: RaptorConfig = defaultConfig) => {
 
   for (const p of pages) {
     // serialize all pages so that themes can loop over them
-    const serializedPages = [...orderBy(pages.map(s => s.serialize(publicPath, s.getDestinationPath() === p.getDestinationPath())), ['relativePath'], "desc")]
+    const serializedPages = [
+      ...orderBy(
+        pages.map(s =>
+          s.serialize(
+            publicPath,
+            s.getDestinationPath() === p.getDestinationPath()
+          )
+        ),
+        ["relativePath"],
+        "desc"
+      )
+    ];
     // generate rendered html result
     const htmlOutput = await generator.render({
       body: p.htmlContent(),
@@ -133,7 +134,7 @@ export const compiler = async (options: RaptorConfig = defaultConfig) => {
       excerpt: p.getExcerpt(),
       pages: serializedPages
     });
-    // wirte result to disk
+    // write result to disk
     await writeFile(p.getDestinationPath(), htmlOutput);
   }
 

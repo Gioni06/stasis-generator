@@ -1,5 +1,5 @@
 {
-  "name": "raptorgen",
+  "name": "stasis-generator",
   "version": "0.0.1",
   "description": "A minimal static site compiler",
   "main": "./dist/bin/cli.js",
@@ -10,11 +10,11 @@
     "src"
   ],
   "scripts": {
-    "start": "tsc && node ./dist/bin/cli build -s src/tests/fixtures/test-project/raptorgen.config.json src/tests/fixtures/test-project",
+    "start": "tsc && node ./dist/bin/cli build -s src/tests/fixtures/test-project/stasis.config.json src/tests/fixtures/test-project",
     "test": "NODE_ENV=test ts-node --files ./src/tests/cases/index.ts",
     "build": "NODE_ENV=production tsc",
-    "run": "node ./dist/bin/cli build -s src/tests/fixtures/test-project/raptorgen.config.json src/tests/fixtures/test-project",
-    "serve": "tsc && node ./dist/bin/cli serve -s src/tests/fixtures/test-project/raptorgen.config.json src/tests/fixtures/test-project",
+    "run": "node ./dist/bin/cli build -s src/tests/fixtures/test-project/stasis.config.json src/tests/fixtures/test-project",
+    "serve": "tsc && node ./dist/bin/cli serve -s src/tests/fixtures/test-project/stasis.config.json src/tests/fixtures/test-project",
     "lint": "tslint  --project tsconfig.json -t codeFrame 'src/**/*.ts'",
     "format": "prettier --write 'src/**/*.ts'"
   },
@@ -71,6 +71,7 @@
     "handlebars": "^4.1.0",
     "opn": "^5.4.0",
     "prettier": "^1.16.4",
+    "rehype-raw": "^4.0.0",
     "tslint": "^5.12.1",
     "tslint-config-prettier": "^1.18.0"
   }
