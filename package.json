@@ -7,7 +7,8 @@
     "stasis-cli": "./dist/bin/cli.js"
   },
   "files": [
-    "src"
+    "src",
+    "dist"
   ],
   "scripts": {
     "start": "tsc && node ./dist/bin/cli build -s src/tests/fixtures/test-project/stasis.config.json src/tests/fixtures/test-project",
