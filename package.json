@@ -4,7 +4,7 @@
   "description": "A minimal static site compiler",
   "main": "./dist/bin/cli.js",
   "bin": {
-    "raptorgen": "./dist/bin/cli.js"
+    "stasis-cli": "./dist/bin/cli.js"
   },
   "files": [
     "src"
@@ -20,14 +20,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Gioni06/raptorgen.git"
+    "url": "git+https://github.com/Gioni06/stasis-generator.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Gioni06/raptorgen/issues"
+    "url": "https://github.com/Gioni06/stasis-generator/issues"
   },
-  "homepage": "https://github.com/Gioni06/raptorgen#readme",
+  "homepage": "https://github.com/Gioni06/stasis-generator#readme",
   "devDependencies": {},
   "dependencies": {
     "@types/chokidar": "^1.7.5",
