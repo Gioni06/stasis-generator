@@ -34,7 +34,7 @@ jobs:
       - run:
           name: Test
           command: npm run test
-          
+
       - persist_to_workspace:
           root: ~/repo
           paths: .
@@ -42,5 +42,10 @@ workflows:
   version: 2
   build-and-test:
     jobs:
-      - build
-      
+      - build:
+          filters:
+              tags:
+                only: /^v.*/
+              branches:
+                only: /master/
+  
