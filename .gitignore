@@ -66,4 +66,5 @@ typings/
 # Project specific
 dist/
 .idea
+.cache
 src/tests/fixtures/test-project/dist/

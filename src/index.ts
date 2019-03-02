@@ -7,15 +7,11 @@ import { startServer } from "./lib/serve";
 
 export const cli = (process: NodeJS.Process): CommanderStatic => {
   program
-    .option("-p", "--pwd <path>", "Current working directory")
-    .option("-t", "--test", "Just a test flag");
-
-  program
     .command("build <path>")
-    .option("-s, --source_config <path>", "The source of the project")
-    .description("Run the compiler")
+    .option("-c, --config_file <path>", "Path to your stasis.config.json file")
+    .description("Create a production build")
     .action(async (cmd, options) => {
-      const stasisConfig = await parseConfigFile(options.source_config);
+      const stasisConfig = await parseConfigFile(options.config_file);
       const compilationPromise = compiler(stasisConfig);
       const bundlePromise = bundle(stasisConfig);
       await Promise.all([compilationPromise, bundlePromise]);
@@ -23,13 +19,14 @@ export const cli = (process: NodeJS.Process): CommanderStatic => {
 
   program
     .command("serve <path>")
-    .option("-s, --source_config <path>", "The source of the project")
-    .description("Start server")
+    .option("-c, --config_file <path>", "Path to your stasis.config.json file")
+    .description("Start development server")
     .action(async (cmd, options) => {
-      const stasisConfig = await parseConfigFile(options.source_config);
+      const stasisConfig = await parseConfigFile(options.config_file);
       const compilationPromise = compiler(stasisConfig);
       const bundlePromise = bundle(stasisConfig);
       await Promise.all([compilationPromise, bundlePromise]);
+      // noinspection JSIgnoredPromiseFromCall
       startServer(stasisConfig, {});
     });
 

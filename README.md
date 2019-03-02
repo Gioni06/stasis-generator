@@ -1,3 +1,6 @@
-# RaptorGen
+# Stasis Generator
 
-A minimal static site compiler
+A minimal static site generator.
+
+## About
+work in progress

@@ -11,11 +11,12 @@
     "dist"
   ],
   "scripts": {
-    "start": "tsc && node ./dist/bin/cli build -s src/tests/fixtures/test-project/stasis.config.json src/tests/fixtures/test-project",
+    "cli": "tsc && node ./dist/bin/cli",
+    "start": "tsc && node ./dist/bin/cli build -c src/tests/fixtures/test-project/stasis.config.json src/tests/fixtures/test-project",
     "test": "NODE_ENV=test ts-node --files ./src/tests/cases/index.ts",
     "build": "NODE_ENV=production tsc",
-    "run": "node ./dist/bin/cli build -s src/tests/fixtures/test-project/stasis.config.json src/tests/fixtures/test-project",
-    "serve": "tsc && node ./dist/bin/cli serve -s src/tests/fixtures/test-project/stasis.config.json src/tests/fixtures/test-project",
+    "run": "node ./dist/bin/cli build -c src/tests/fixtures/test-project/stasis.config.json src/tests/fixtures/test-project",
+    "serve": "tsc && node ./dist/bin/cli serve -c src/tests/fixtures/test-project/stasis.config.json src/tests/fixtures/test-project",
     "lint": "tslint --project tsconfig.json -t codeFrame 'src/**/*.ts'",
     "format": "prettier --write 'src/**/*.ts'"
   },
