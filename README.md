@@ -86,4 +86,8 @@ Its recommended that you install Stasis locally in your project and use it via *
 "serve": "stasis-cli serve -s stasis.config.json src",
 ```
 
+## Advanced Usage
+
+*Work in progress*
+
 
