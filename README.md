@@ -1,6 +1,9 @@
-# Stasis Generator
+# Stasis Generator 
+[![CircleCI](https://circleci.com/gh/Gioni06/stasis-generator/tree/master.svg?style=svg)](https://circleci.com/gh/Gioni06/stasis-generator/tree/master)
 
-A minimal static site generator.
+**A minimal static site generator.**
+
+[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/Gioni06/stasis-basic-example)
 
 ## Project Status
 
