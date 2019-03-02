@@ -77,7 +77,7 @@ To create a static site project you can clone or download the [example project ]
 
 You can choose to install Stasis globally with `npm i -g stasis-generator`.
 
-Run the CLI with `stasis-cli -h` to all available options.
+Run the CLI with `stasis-cli -h` to see all available options.
 
 Its recommended that you install Stasis locally in your project and use it via **npm scripts**.
 
