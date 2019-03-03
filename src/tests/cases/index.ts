@@ -1,15 +1,13 @@
 import chalk from "chalk";
 
 import {
-  testBundlerPicksUpFiles,
   testClearDistDirectory,
   testGeneratesPrettyUrls,
   testRendersPageWithCustomLayout,
   testRendersPageWithDefaultLayout,
   testCopyStaticFolder
 } from "./compiler.test";
-import { testPageDestinationPath, testPageSlug } from "./page.test";
-import { testLoadRaptorConfig } from "./utils.test";
+import { testLoadStasisConfig } from "./utils.test";
 
 export interface TCase {
   description: string;
@@ -50,18 +48,15 @@ export async function executeSyncTests(testCases: TCase[]) {
 
 (async () => {
   try {
-  await executeSyncTests([testLoadRaptorConfig()])
-  await executeSyncTests([ testClearDistDirectory()])
-  await executeSyncTests([
-    testRendersPageWithDefaultLayout(),
-    testRendersPageWithCustomLayout(),
-    testGeneratesPrettyUrls(),
-    /* testBundlerPicksUpFiles(), */
-    testCopyStaticFolder(),
-    testPageDestinationPath(),
-    testPageSlug()
-  ])
-  } catch(e) {
-    throw e
-  } 
-})()
+    await executeSyncTests([testLoadStasisConfig()]);
+    await executeSyncTests([testClearDistDirectory()]);
+    await executeSyncTests([
+      testRendersPageWithDefaultLayout(),
+      testRendersPageWithCustomLayout(),
+      testGeneratesPrettyUrls(),
+      testCopyStaticFolder()
+    ]);
+  } catch (e) {
+    throw e;
+  }
+})();

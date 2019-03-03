@@ -7,9 +7,7 @@ dict:
   first: string value
   second: true
 ---
-# Hello Universe
-
-This is the second test file
+This is the excerpt of the second test file
 ---
 
 This is the second test file, This is the second test file.

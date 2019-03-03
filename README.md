@@ -37,6 +37,8 @@ To create a static site project you can clone or download the [example project ]
             simple-markdown-file.md
         static/
         assets/
+        graphql/
+           index.js
     stasis.config.json
     package.json
 ``` 
@@ -49,6 +51,7 @@ To create a static site project you can clone or download the [example project ]
 - **pages** Your website content. Stasis respects the folder structure and automatically generate pretty URLs for each `.md` file.
 - **static** Place your static assets like images and fonts here.
 - **assets** Place all your scripts and stylesheets here. Those files are bundled using Parcel.
+- **graphql** Define your schema and root here. Read more in the [Advanced Usage](#advanced-usage) section.
 - **stasis.config.json**  A simple configuration file for your project. Provide this file as `-c` argument to the *build*, and *serve* CLI argument.
 
 ## stasis.config.json
@@ -91,6 +94,70 @@ Its recommended that you install Stasis locally in your project and use it via *
 
 ## Advanced Usage
 
-*Work in progress*
+### GraphQL
+Stasis lets you configure a GraphQL schema to query your pages. At this point it does not infer GraphQL types from your frontmatter content like Gatsby does. Its up to you to define your schema, queries and resolvers.
+To do this create an `index.js` file in your `graphql` directory and export an object with two functions. Both functions get an array of all your **pages** and the Stasis **configuration**:
 
+```
+module.exports = {
+	createSchema: (pages, config) => {
+		return `
+	type Query {
+        pageByIndex(index: Int!): Page
+		pageByTitle(title: String!): Page
+        pages: [Page]
+    }
+    type Page {
+        html: String
+		frontmatter: Frontmatter
+        excerpt: String
+        relativePath: String
+        active: Boolean
+    }
+	type Frontmatter {
+		title: String
+		date: String
+		layout: String
+	}
+	`
+	} ,
+	createRoot: (pages, config) => {
+		return {
+			pages: () => pages,
+			pageByIndex: args => pages[args.index],
+			pageByTitle: args => pages.filter(p => p.frontmatter.tile === args.title)
+		}
+	}
+}
+```
+
+- `createSchema` must return a string with a valid GraphQL schema.
+- `createRoot` must return an object with your GraphQL resolvers.
+
+If you want to expose the result of a query to your layout, just specify a *query* field with a valid GraphQL query inside your page frontmatter:
+
+```
+---
+title: front page
+query: '{
+    pages {
+        frontmatter {
+            title
+        }
+        relativePath
+    }
+}'
+---
+Some content...
+```
+
+You can use the result of that query inside your handlebars layouts:
+
+```
+<ul>
+    {{#each this.query.data.pages}}
+        <li><a href="{{this.relativePath}}">{{this.frontmatter.title}}</a></li>
+    {{/each}}
+</ul>
+```
 

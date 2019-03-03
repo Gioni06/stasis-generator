@@ -4,19 +4,20 @@ import { parseConfigFile } from "../../utils";
 
 import { TCase } from ".";
 
-export function testLoadRaptorConfig(): TCase {
+export function testLoadStasisConfig(): TCase {
   async function run() {
     const config = await parseConfigFile(
       path.resolve(__dirname, "../fixtures/test-project/stasis.config.json")
     );
     try {
-      assert.deepEqual(config, {
+      assert.deepStrictEqual(config, {
         assetsPath: "assets",
         basePath: path.resolve(__dirname, "../fixtures/test-project"),
         entryAssets: ["**/*"],
         publicPath: "dist",
         sourcePath: "src",
-        staticPath: "static"
+        staticPath: "static",
+        graphQlPath: "graphql"
       });
       return true;
     } catch (e) {

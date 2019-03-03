@@ -5,25 +5,20 @@
 	{{> header-assets }}
 	<meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	<title>{{meta.title}}</title>
+	<title>{{frontmatter.title}}</title>
 </head>
 
 <body>
 	{{> navigation}}
 	<div class="container">
 		<div class="row">
-			<div class="col-12 col-md-4">
-				<ul class="list-group">
-					{{#each pages}}
-					<li class="list-group-item {{#if this.active}}active{{/if}}"><a class="p-2 text-dark"href="{{this.relativePath}}" title="{{this.meta.title}}">{{this.meta.title}}</a></li>
-					{{/each}}
+			<div class="col-12 col-md-8">
+				<h1>Hello From GraphQL</h1>
+				<ul>
+				{{#each this.query.data.pages}}
+					<li><a href="{{this.relativePath}}">{{this.frontmatter.title}}</a></li>
+				{{/each}}
 				</ul>
-			</div>
-			<div class="col-12 col-md-8">
-				{{{json pages}}}
-			</div>
-			<div class="col-12 col-md-8">
-				{{{body}}}
 			</div>
 		</div>
 	</div>

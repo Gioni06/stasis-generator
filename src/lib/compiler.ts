@@ -1,44 +1,59 @@
-import chalk from "chalk";
-import matter from "gray-matter";
-import path from "path";
-import glob from "glob";
-import unified from "unified";
-import fs from "fs-extra";
-import markdown from "remark-parse";
 import format from "rehype-format";
-import remark2rehype from "remark-rehype";
-import html from "rehype-stringify";
+
+import chalk from "chalk";
+
+import path from "path";
+
+import glob from "glob";
+
+import unified from "unified";
+
+import fs from "fs-extra";
+
 import raw from "rehype-raw";
+
+import matter from "gray-matter";
+
+import markdown from "remark-parse";
+
+import remark2rehype from "remark-rehype";
+
+import html from "rehype-stringify";
+
 import fsp from "fs-extra-promise";
+
 import frontmatter from "remark-frontmatter";
 import { HandlebarsEngine } from "./engine";
 import { Generator } from "./generator";
-import { Page } from "./page";
-import orderBy from "lodash/orderBy";
+import { makeGraph } from "./graphql";
+import { Edge } from "./edge";
 
-interface RaptorConfig {
+interface StasisConfig {
   sourcePath: string;
   publicPath: string;
   basePath: string;
   staticPath: string;
   assetsPath: string;
+  graphQlPath: string;
 }
 
-const defaultConfig: RaptorConfig = {
+const defaultConfig: StasisConfig = {
   sourcePath: "src",
   publicPath: "public",
   basePath: "/",
   staticPath: "static",
-  assetsPath: "assets"
+  assetsPath: "assets",
+  graphQlPath: "graphql"
 };
 
-export const compiler = async (options: RaptorConfig = defaultConfig) => {
+export const compiler = async (options: StasisConfig = defaultConfig) => {
   const isTestRunner = process.env.NODE_ENV === "test";
   const startTime = process.hrtime();
   const basePath = options.basePath;
   const sourcePath = path.resolve(basePath, options.sourcePath);
   const publicPath = path.resolve(basePath, options.publicPath);
   const staticPath = path.resolve(sourcePath, options.staticPath);
+  const graphQlPath = path.resolve(sourcePath, options.graphQlPath);
   const staticDestinationPath = path.resolve(publicPath, options.staticPath);
   const pagesPath = `${sourcePath}/pages`;
 
@@ -77,13 +92,14 @@ export const compiler = async (options: RaptorConfig = defaultConfig) => {
 
   // Collect a list of files
   const files: string[] = glob.sync("**/*.@(md|markdown)", { cwd: pagesPath });
-  const pages: Page[] = [];
+  const pages: Edge[] = [];
 
   for (const f of files) {
     // raw content of markdown source
     const fContent: string = await fsp.readFileAsync(`${pagesPath}/${f}`, {
       encoding: "utf8"
     });
+    // process markdown file from source folder
     const result = await unified()
       .use(markdown)
       .use(frontmatter, ["yaml", "toml"])
@@ -93,49 +109,84 @@ export const compiler = async (options: RaptorConfig = defaultConfig) => {
       .use(html)
       .process(fContent);
 
+    // extract html content
     const { content } = matter(String(result), {
       excerpt: true
     });
-    const { data, excerpt } = matter(String(fContent), {
+
+    // extract markdown formatted excerpt and frontmatter
+    const { data, excerpt: MarkdownExcerpt = "" } = matter(String(fContent), {
       excerpt: true
     });
+
+    // convert markdown excerpt to html
+    const convertedExcerpt = await unified()
+      .use(markdown)
+      .use(remark2rehype, { allowDangerousHTML: true })
+      .use(raw)
+      .use(format)
+      .use(html)
+      .process(Buffer.from(MarkdownExcerpt));
+
+    // extract markdown formatted from unified object
+    const { excerpt } = matter(String(convertedExcerpt), {
+      excerpt: true
+    });
+
+    // get dirname and filename from original file
     const { dir, name } = path.parse(f);
 
-    const page = new Page(
-      content,
-      data,
-      excerpt,
-      name,
-      `${publicPath}${dir && "/" + dir}`
+    // choose edge name
+    const fileName = name;
+
+    // create Edge with collected information
+    const page = new Edge(
+      fileName,
+      content, // html content
+      data, // frontmatter
+      publicPath, // stasis public path (used to generate relative path)
+      `${publicPath}${dir && "/" + dir}`, // destination path
+      excerpt // html excerpt
     );
+
     pages.push(page);
   }
 
+  const { createRoot, createSchema } = require(path.relative(
+    __dirname,
+    graphQlPath
+  ));
+
   for (const p of pages) {
-    // serialize all pages so that themes can loop over them
-    const serializedPages = [
-      ...orderBy(
-        pages.map(s =>
-          s.serialize(
-            publicPath,
-            s.getDestinationPath() === p.getDestinationPath()
-          )
-        ),
-        ["relativePath"],
-        "desc"
-      )
-    ];
+    // Serialize pages
+    const PageObjects = pages.map((page: Edge) => {
+      const isActive = page.getDestinationPath() === p.getDestinationPath();
+      return page.asObject(isActive);
+    });
+
+    let result = {};
+    if (p.hasQuery()) {
+      // create graphql schema and root
+      const root = createRoot(PageObjects, options);
+      const schema = createSchema(PageObjects, options);
+      // create query function
+
+      const query = makeGraph(schema, root);
+      // get query result
+      result = await query(p.query);
+    }
     // generate rendered html result
     const htmlOutput = await generator.render({
-      body: p.htmlContent(),
-      meta: p.getMeta(),
-      title: p.getName(),
-      slug: p.getSlug(),
-      excerpt: p.getExcerpt(),
-      pages: serializedPages
+      body: p.html,
+      frontmatter: p.frontmatter,
+      title: p.frontmatter.title || p.fileName,
+      slug: p.slug,
+      excerpt: p.excerpt,
+      query: result
     });
+
     // write result to disk
-    await writeFile(p.getDestinationPath(), htmlOutput);
+    await writeFile(`${p.getDestinationPath()}`, htmlOutput);
   }
 
   // copy static asset folder

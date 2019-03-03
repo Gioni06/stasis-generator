@@ -48,7 +48,7 @@ export class HandlebarsEngine implements TemplateEngine {
   }
 
   public async render(props: any) {
-    const tpl = await this.getTemplate(props.meta.layout);
+    const tpl = await this.getTemplate(props.frontmatter.layout);
     const template = handlebars.compile(tpl);
     return template(props);
   }

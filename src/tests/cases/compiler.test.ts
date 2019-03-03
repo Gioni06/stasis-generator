@@ -75,7 +75,7 @@ export function testRendersPageWithDefaultLayout(): TCase {
         config.basePath + "/" + config.publicPath + "/" + "index.html",
         "utf8"
       );
-      const checkString = `<li><a href="/docs">Docs Page</a>`;
+      const checkString = `<li><a href="/docs/index.html">Docs Page</a>`;
       assert(page.indexOf(checkString) > 0);
       return true;
     } catch (e) {
