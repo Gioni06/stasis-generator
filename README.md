@@ -119,28 +119,28 @@ module.exports = {
 		return `
 	type Query {
         pageByIndex(index: Int!): Page
-		pageByTitle(title: String!): Page
+		    pageByTitle(title: String!): Page
         pages: [Page]
     }
-    type Page {
+  type Page {
         html: String
-		frontmatter: Frontmatter
+		    frontmatter: Frontmatter
         excerpt: String
         relativePath: String
         active: Boolean
     }
 	type Frontmatter {
-		title: String
-		date: String
-		layout: String
-	}
+		    title: String
+		    date: String
+		    layout: String
+	 }
 	`
 	} ,
 	createRoot: (pages, config) => {
 		return {
 			pages: () => pages,
 			pageByIndex: args => pages[args.index],
-			pageByTitle: args => pages.filter(p => p.frontmatter.tile === args.title)
+			pageByTitle: args => pages.find(p => p.frontmatter.title === args.title)
 		}
 	}
 }
