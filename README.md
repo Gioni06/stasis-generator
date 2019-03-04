@@ -13,7 +13,7 @@ This project is currently in alpha status. It's not recommended to use it in pro
 
 Stasis is a simple and easy to use static site generator. It aims to provide production ready tools to create static website projects.
 
-Stasis uses *Handlebars* templates to compile your Markdown source files into static HTML webpages. Scripts and styles are compiled using the powerful Parcel Bundler. It can handle `sass`, `scss`, `ts` and many more asset types and compiles them into pure javascript and CSS. You can read more about supported asset types at Parcel's documentation. 
+Stasis uses *Handlebars* templates to compile your Markdown source files into static HTML web pages. Scripts and styles are compiled using the powerful Parcel Bundler. It can handle `sass`, `scss`, `ts` and many more asset types and compiles them into pure javascript and CSS. You can read more about supported asset types at Parcel's documentation.
 
 ## Getting started
 
@@ -56,12 +56,13 @@ To create a static site project you can clone or download the [example project ]
 
 ## stasis.config.json
 
-```
+```json
 {
     "sourcePath": "src",
     "publicPath": "dist",
     "assetsPath": "assets",
     "staticPath": "static",
+    "graphQlPath": "graphql",
     "entryAssets": [
         "**/*"
     ]
@@ -94,11 +95,25 @@ Its recommended that you install Stasis locally in your project and use it via *
 
 ## Advanced Usage
 
+### Templates
+
+The compiler exposes various information:
+
+- **body** Raw html content
+- **frontmatter** Frontmatter data
+- **title** The page title. Either `frontmatter.title` or the filename
+- **slug** A slug version of the title
+- **excerpt** An excerpt of your markdown content. (Everything above the first `---`, frontmatter excluded)
+- **query** The result of a GraphQL query
+- **isProduction** Boolean flag
+- **isDevelopment** Boolean flag
+
+
 ### GraphQL
 Stasis lets you configure a GraphQL schema to query your pages. At this point it does not infer GraphQL types from your frontmatter content like Gatsby does. Its up to you to define your schema, queries and resolvers.
 To do this create an `index.js` file in your `graphql` directory and export an object with two functions. Both functions get an array of all your **pages** and the Stasis **configuration**:
 
-```
+```js
 module.exports = {
 	createSchema: (pages, config) => {
 		return `
@@ -136,8 +151,8 @@ module.exports = {
 
 If you want to expose the result of a query to your layout, just specify a *query* field with a valid GraphQL query inside your page frontmatter:
 
-```
----
+```markdown
+-----------
 title: front page
 query: '{
     pages {
@@ -153,7 +168,7 @@ Some content...
 
 You can use the result of that query inside your handlebars layouts:
 
-```
+```handlebars
 <ul>
     {{#each this.query.data.pages}}
         <li><a href="{{this.relativePath}}">{{this.frontmatter.title}}</a></li>
@@ -161,3 +176,28 @@ You can use the result of that query inside your handlebars layouts:
 </ul>
 ```
 
+### Use query results in Javascript client code.
+
+In order to access your query results (or any other data) in your client side code, just attach it to the window object.
+
+```handlebars
+{{#if this.query.data.pages}}
+<script>
+    window.pages = {{{ json this.query.data.pages }}}
+</script>
+{{/if}}
+```
+
+### Use live reload in development
+
+The development server automatically starts a live reload server that you can use during development.
+The compiler exposes a `isDevelopment` variable to the layout that you can use to conditionally insert the client side live-reload script.
+
+```handlebars
+{{#if this.isDevelopment}}
+  <script>
+    document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] +
+      ':35729/livereload.js?snipver=1"></' + 'script>')
+  </script>
+{{/if}}
+``

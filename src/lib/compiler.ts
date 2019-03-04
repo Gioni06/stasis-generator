@@ -1,27 +1,16 @@
 import format from "rehype-format";
-
 import chalk from "chalk";
-
 import path from "path";
-
 import glob from "glob";
-
 import unified from "unified";
-
 import fs from "fs-extra";
-
 import raw from "rehype-raw";
-
 import matter from "gray-matter";
-
 import markdown from "remark-parse";
-
 import remark2rehype from "remark-rehype";
-
 import html from "rehype-stringify";
-
+import doc from "rehype-document";
 import fsp from "fs-extra-promise";
-
 import frontmatter from "remark-frontmatter";
 import { HandlebarsEngine } from "./engine";
 import { Generator } from "./generator";
@@ -48,6 +37,8 @@ const defaultConfig: StasisConfig = {
 
 export const compiler = async (options: StasisConfig = defaultConfig) => {
   const isTestRunner = process.env.NODE_ENV === "test";
+  const isProduction = process.env.NODE_ENV === "production";
+  const isDevelopment = !isProduction && !isTestRunner;
   const startTime = process.hrtime();
   const basePath = options.basePath;
   const sourcePath = path.resolve(basePath, options.sourcePath);
@@ -182,7 +173,9 @@ export const compiler = async (options: StasisConfig = defaultConfig) => {
       title: p.frontmatter.title || p.fileName,
       slug: p.slug,
       excerpt: p.excerpt,
-      query: result
+      query: result,
+      isProduction,
+      isDevelopment
     });
 
     // write result to disk
