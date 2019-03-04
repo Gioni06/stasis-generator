@@ -7,8 +7,10 @@ import handler from "serve-handler";
 import opn from "opn";
 import range from "lodash/range";
 import getPort from "get-port";
+import livereload from "livereload";
 
 export const startServer = async (stasisConfig: any, flags: any) => {
+  process.env.NODE_ENV = "development";
   const srcPath = stasisConfig.basePath + "/" + stasisConfig.sourcePath;
   const options = {
     public: stasisConfig.basePath + "/" + stasisConfig.publicPath,
@@ -53,4 +55,5 @@ export const startServer = async (stasisConfig: any, flags: any) => {
     opn("http://localhost:" + freePort);
     console.log("Running at http://localhost:" + freePort);
   });
+  livereload.createServer().watch(options.public);
 };

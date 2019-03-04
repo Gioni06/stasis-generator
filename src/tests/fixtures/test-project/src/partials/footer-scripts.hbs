@@ -1,6 +1,16 @@
+<!--suppress ALL -->
+{{#if this.query.data.pages}}
 <script>
-	window.pages = {{{ json pages }}}
+    window.pages = {{{ json this.query.data.pages }}}
 </script>
+{{/if}}
+{{#if this.isDevelopment}}
+  <script>
+    document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] +
+      ':35729/livereload.js?snipver=1"></' + 'script>')
+  </script>
+{{/if}}
+
 
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
 	integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
