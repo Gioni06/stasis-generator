@@ -100,7 +100,7 @@ Its recommended that you install Stasis locally in your project and use it via *
 The compiler exposes various information:
 
 - **body** Raw html content
-- **frontmatter** Frontmatter data
+- **frontmatter** Front Matter data
 - **title** The page title. Either `frontmatter.title` or the filename
 - **slug** A slug version of the title
 - **excerpt** An excerpt of your markdown content. (Everything above the first `---`, frontmatter excluded)
@@ -201,3 +201,9 @@ The compiler exposes a `isDevelopment` variable to the layout that you can use t
   </script>
 {{/if}}
 ```
+
+### Pretty URL
+
+By default Stasis generates pretty urls. A file page called `example.md` will be places at `/example/index.html`. 
+If a file is called `index.md` Stasis will just generate an `index.html`. 
+You can choose to skip pretty url generation and tell Stasis to use the original filename by setting `pretty_url` in your pages Front Matter
