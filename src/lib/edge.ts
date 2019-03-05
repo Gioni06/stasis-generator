@@ -77,6 +77,14 @@ export class Edge implements EdgeInterface, AsObject {
   public getDestinationPath(): string {
     const firstSegment =
       !this._destPath || this._destPath === "/" ? "" : this._destPath;
+    // A user can choose to not use pretty url for a page by setting `pretty_url: false` in the page Front Matter
+    if (
+      this.frontmatter.hasOwnProperty("pretty_url") &&
+      !this.frontmatter.pretty_url
+    ) {
+      return `${firstSegment}/${this.fileName}.html`;
+    }
+
     if (this.fileName !== "index") {
       return `${firstSegment}/${this.slug}/index.html`;
     } else {
