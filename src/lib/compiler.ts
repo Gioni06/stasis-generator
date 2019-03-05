@@ -9,7 +9,7 @@ import matter from "gray-matter";
 import markdown from "remark-parse";
 import remark2rehype from "remark-rehype";
 import html from "rehype-stringify";
-import doc from "rehype-document";
+import rehypeSlug from "rehype-slug";
 import fsp from "fs-extra-promise";
 import frontmatter from "remark-frontmatter";
 import { HandlebarsEngine } from "./engine";
@@ -95,6 +95,7 @@ export const compiler = async (options: StasisConfig = defaultConfig) => {
       .use(markdown)
       .use(frontmatter, ["yaml", "toml"])
       .use(remark2rehype, { allowDangerousHTML: true })
+      .use(rehypeSlug)
       .use(raw)
       .use(format)
       .use(html)
@@ -180,6 +181,20 @@ export const compiler = async (options: StasisConfig = defaultConfig) => {
 
     // write result to disk
     await writeFile(`${p.getDestinationPath()}`, htmlOutput);
+  }
+
+  const rootFiles = glob.sync(`*.*`, { cwd: sourcePath });
+
+  // Copy files from the root of the `src` directory to the root of the output directory
+  for (const rootFile of rootFiles) {
+    await fsp.copyAsync(
+      sourcePath + "/" + rootFile,
+      publicPath + "/" + rootFile,
+      {
+        overwrite: true,
+        preserveTimestamps: true
+      }
+    );
   }
 
   // copy static asset folder
