@@ -12,3 +12,4 @@ declare module "rehype-slug";
 declare module "parcel-bundler";
 declare module "glob";
 declare module "livereload";
+declare module "opn";
