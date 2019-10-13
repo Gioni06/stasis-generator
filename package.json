@@ -1,6 +1,6 @@
 {
   "name": "stasis-generator",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "A minimal static site compiler",
   "main": "./dist/bin/cli.js",
   "bin": {
