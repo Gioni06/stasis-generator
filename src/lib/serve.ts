@@ -1,8 +1,8 @@
 import chokidar, { FSWatcher } from "chokidar";
+import http from 'http';
 import debounce from "lodash/debounce";
 import { bundle } from "./bundler";
 import { compiler } from "./compiler";
-import micro from "micro";
 import handler from "serve-handler";
 import opn from "opn";
 import range from "lodash/range";
@@ -18,7 +18,7 @@ export const startServer = async (stasisConfig: any, flags: any) => {
     assetsPath: srcPath + "/" + stasisConfig.assetsPath
   };
 
-  const server = micro(async (request: any, response: any) => {
+  const server = http.createServer((request: any, response: any) => {
     return handler(request, response, {
       cleanUrls: true,
       trailingSlash: false,

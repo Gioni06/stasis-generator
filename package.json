@@ -54,8 +54,6 @@
     "handlebars": "^4.4.3",
     "livereload": "^0.8.2",
     "lodash": "^4.17.15",
-    "micro": "^9.3.4",
-    "micro-dev": "^3.0.0",
     "opn": "^5.5.0",
     "parcel-bundler": "^1.12.4",
     "prettier": "^1.18.2",
