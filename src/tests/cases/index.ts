@@ -5,7 +5,8 @@ import {
   testGeneratesPrettyUrls,
   testRendersPageWithCustomLayout,
   testRendersPageWithDefaultLayout,
-  testCopyStaticFolder
+  testCopyStaticFolder,
+  testCopyRootFiles
 } from "./compiler.test";
 import { testLoadStasisConfig } from "./utils.test";
 
@@ -54,7 +55,8 @@ export async function executeSyncTests(testCases: TCase[]) {
       testRendersPageWithDefaultLayout(),
       testRendersPageWithCustomLayout(),
       testGeneratesPrettyUrls(),
-      testCopyStaticFolder()
+      testCopyStaticFolder(),
+      testCopyRootFiles()
     ]);
   } catch (e) {
     throw e;

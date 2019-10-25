@@ -183,7 +183,7 @@ export const compiler = async (options: StasisConfig = defaultConfig) => {
     await writeFile(`${p.getDestinationPath()}`, htmlOutput);
   }
 
-  const rootFiles = glob.sync(`*.*`, { cwd: sourcePath });
+  const rootFiles = glob.sync(`*`, { cwd: sourcePath, dot: true, nodir: true });
 
   // Copy files from the root of the `src` directory to the root of the output directory
   for (const rootFile of rootFiles) {

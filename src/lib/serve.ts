@@ -1,5 +1,5 @@
 import chokidar, { FSWatcher } from "chokidar";
-import http from 'http';
+import http from "http";
 import debounce from "lodash/debounce";
 import { bundle } from "./bundler";
 import { compiler } from "./compiler";

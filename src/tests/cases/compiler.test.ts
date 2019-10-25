@@ -228,3 +228,37 @@ export function testCopyStaticFolder(): TCase {
     run
   };
 }
+
+export function testCopyRootFiles(): TCase {
+  async function run() {
+    const config = await parseConfigFile(configFilePath);
+    try {
+      await bundle(config);
+
+      // check if files exists
+      await fileExists(
+        config.basePath + "/" + config.sourcePath + "/" + "404.html"
+      );
+      await fileExists(
+        config.basePath + "/" + config.publicPath + "/" + "404.html"
+      );
+
+      // check if files exists
+      await fileExists(
+        config.basePath + "/" + config.sourcePath + "/" + "_redirects"
+      );
+      await fileExists(
+        config.basePath + "/" + config.publicPath + "/" + "_redirects"
+      );
+      return true;
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  return {
+    description:
+      "It copies files from the src directory to the destination root",
+    run
+  };
+}
