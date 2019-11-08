@@ -89,8 +89,8 @@ Its recommended that you install Stasis locally in your project and use it via *
 
 *Basic usage example:*
 ```
-"build": "stasis-cli build -s stasis.config.json src",
-"serve": "stasis-cli serve -s stasis.config.json src",
+"build": "stasis-cli build -c stasis.config.json src",
+"serve": "stasis-cli serve -c stasis.config.json src",
 ```
 
 ## Advanced Usage
