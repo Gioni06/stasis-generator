@@ -13,7 +13,9 @@ export const parseConfigFile = async (path: string) => {
     };
     return config;
   } catch (e) {
-    console.log(chalk.red(e.message));
+    if (e instanceof Error) {
+      console.log(chalk.red(e.message));
+    }
     process.exit(0);
   }
 };

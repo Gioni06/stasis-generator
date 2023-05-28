@@ -1,14 +1,15 @@
 import Bundler from "parcel-bundler";
 import glob from "glob";
 import chalk from "chalk";
+import { StasisConfig } from "./compiler";
 
 const isTestRunner = process.env.NODE_ENV === "test";
 
-export const bundle = async (stasisConfig: { [key: string]: any }) => {
+export const bundle = async (stasisConfig: StasisConfig) => {
   // lookup files to bundle
   let files: string[];
   if (Array.isArray(stasisConfig.entryAssets)) {
-    files = stasisConfig.entryAssets.reduce((res, value, index) => {
+    files = stasisConfig.entryAssets.reduce((res: string[], value: string) => {
       const f = glob.sync(value, {
         cwd:
           stasisConfig.basePath +

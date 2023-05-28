@@ -66,5 +66,6 @@ typings/
 # Project specific
 dist/
 .idea
+.vscode
 .cache
 src/tests/fixtures/test-project/dist/
