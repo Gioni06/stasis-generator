@@ -9,6 +9,7 @@ import {
   testCopyRootFiles
 } from "./compiler.test";
 import { testLoadStasisConfig } from "./utils.test";
+import { assert } from "console";
 
 export interface TCase {
   description: string;
@@ -31,8 +32,10 @@ export async function test(tCase: TCase): Promise<boolean | undefined> {
 
     return result;
   } catch (e) {
-    console.error(chalk.red(e.message));
-    console.error(e.stack);
+    if (e instanceof Error) {
+      console.error(chalk.red(e.message));
+      console.error(e.stack);
+    }
   }
 }
 
@@ -41,8 +44,10 @@ export async function executeSyncTests(testCases: TCase[]) {
     try {
       await test(i);
     } catch (e) {
-      console.error(chalk.red(e.message));
-      console.error(e.stack);
+      if (e instanceof Error) {
+        console.error(chalk.red(e.message));
+        console.error(e.stack);
+      }
     }
   }
 }

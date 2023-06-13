@@ -10,7 +10,7 @@ export const cli = (process: NodeJS.Process): CommanderStatic => {
     .command("build <path>")
     .option("-c, --config_file <path>", "Path to your stasis.config.json file")
     .description("Create a production build")
-    .action(async (cmd, options) => {
+    .action(async (_, options) => {
       const stasisConfig = await parseConfigFile(options.config_file);
       const compilationPromise = compiler(stasisConfig);
       const bundlePromise = bundle(stasisConfig);
@@ -21,13 +21,13 @@ export const cli = (process: NodeJS.Process): CommanderStatic => {
     .command("serve <path>")
     .option("-c, --config_file <path>", "Path to your stasis.config.json file")
     .description("Start development server")
-    .action(async (cmd, options) => {
+    .action(async (_, options) => {
       const stasisConfig = await parseConfigFile(options.config_file);
       const compilationPromise = compiler(stasisConfig);
       const bundlePromise = bundle(stasisConfig);
       await Promise.all([compilationPromise, bundlePromise]);
       // noinspection JSIgnoredPromiseFromCall
-      startServer(stasisConfig, {});
+      startServer(stasisConfig);
     });
 
   program.parse(process.argv);

@@ -2,14 +2,15 @@ import chokidar, { FSWatcher } from "chokidar";
 import http from "http";
 import debounce from "lodash/debounce";
 import { bundle } from "./bundler";
-import { compiler } from "./compiler";
+import { compiler, StasisConfig } from "./compiler";
 import handler from "serve-handler";
 import opn from "opn";
 import range from "lodash/range";
 import getPort from "get-port";
 import livereload from "livereload";
+import { IncomingMessage, ServerResponse } from "http";
 
-export const startServer = async (stasisConfig: any, flags: any) => {
+export const startServer = async (stasisConfig: StasisConfig) => {
   process.env.NODE_ENV = "development";
   const srcPath = stasisConfig.basePath + "/" + stasisConfig.sourcePath;
   const options = {
@@ -18,13 +19,15 @@ export const startServer = async (stasisConfig: any, flags: any) => {
     assetsPath: srcPath + "/" + stasisConfig.assetsPath
   };
 
-  const server = http.createServer((request: any, response: any) => {
-    return handler(request, response, {
-      cleanUrls: true,
-      trailingSlash: false,
-      public: options.public
-    });
-  });
+  const server = http.createServer(
+    (request: IncomingMessage, response: ServerResponse) => {
+      return handler(request, response, {
+        cleanUrls: true,
+        trailingSlash: false,
+        public: options.public
+      });
+    }
+  );
 
   const pageWatcher: FSWatcher = chokidar.watch(options.srcPath, {
     ignoreInitial: true,

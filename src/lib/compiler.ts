@@ -17,7 +17,8 @@ import { Generator } from "./generator";
 import { makeGraph } from "./graphql";
 import { Edge } from "./edge";
 
-interface StasisConfig {
+export interface StasisConfig {
+  entryAssets: string | string[];
   sourcePath: string;
   publicPath: string;
   basePath: string;
@@ -27,6 +28,7 @@ interface StasisConfig {
 }
 
 const defaultConfig: StasisConfig = {
+  entryAssets: [],
   sourcePath: "src",
   publicPath: "public",
   basePath: "/",
